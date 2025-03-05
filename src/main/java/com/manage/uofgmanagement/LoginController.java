@@ -7,6 +7,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import com.manage.uofgmanagement.ExcelReader;
+import java.io.IOException;
 
 public class LoginController {
 
@@ -36,16 +37,15 @@ public class LoginController {
     }
 
     private void navigateToDashboard(String role) {
-        // Logic to load the correct dashboard based on role (ADMIN or USER)
-        if ("ADMIN".equals(role)) {
+        // Function to load the correct dashboard based on role (ADMIN or USER)
+        if ("ADMIN".equals(role)) { //load the admin fxml here
             System.out.println("Redirecting to Admin Dashboard...");
             // Load Admin Dashboard
-        } else if ("USER".equals(role)) {
+        } else if ("USER".equals(role)) { //load the user fxml here
             System.out.println("Redirecting to User Dashboard...");
             // Load User Dashboard
         }
-
-        // Close login window (optional)
+        // Close login window
         Stage stage = (Stage) loginButton.getScene().getWindow();
         stage.close();
     }

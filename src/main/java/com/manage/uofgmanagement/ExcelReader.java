@@ -13,7 +13,7 @@ public class ExcelReader {
     private static final Map<String, String> users = new HashMap<>();
     private static final Map<String, String> roles = new HashMap<>();
 
-    // Load user data from Excel when application starts
+    // Load user data from Excel
     public static void loadUserData() {
         try (FileInputStream file = new FileInputStream(new File(FILE_PATH));
              Workbook workbook = new XSSFWorkbook(file)) {
@@ -22,8 +22,8 @@ public class ExcelReader {
             Sheet studentSheet = workbook.getSheet("Students");
             if (studentSheet != null) {
                 for (Row row : studentSheet) {
-                    Cell emailCell = row.getCell(0);
-                    Cell passwordCell = row.getCell(11);
+                    Cell emailCell = row.getCell(4); // Column A
+                    Cell passwordCell = row.getCell(11); // Column L
                     if (emailCell != null && passwordCell != null) {
                         String email = getCellValue(emailCell);
                         String password = getCellValue(passwordCell);
@@ -32,6 +32,7 @@ public class ExcelReader {
                             roles.put(email, "USER");
                         }
                     }
+                    System.out.println("Loaded users: " + users);
                 }
             }
 
@@ -39,8 +40,8 @@ public class ExcelReader {
             Sheet facultySheet = workbook.getSheet("Faculties");
             if (facultySheet != null) {
                 for (Row row : facultySheet) {
-                    Cell emailCell = row.getCell(0);
-                    Cell passwordCell = row.getCell(7);
+                    Cell emailCell = row.getCell(4); // Column A
+                    Cell passwordCell = row.getCell(7); // Column H
                     if (emailCell != null && passwordCell != null) {
                         String email = getCellValue(emailCell);
                         String password = getCellValue(passwordCell);
@@ -49,7 +50,9 @@ public class ExcelReader {
                             roles.put(email, "ADMIN");
                         }
                     }
+                    System.out.println("Loaded users: " + users);
                 }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
