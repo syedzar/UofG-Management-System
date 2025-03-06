@@ -15,15 +15,15 @@ import java.util.Objects;
 
 public class LoginController {
     @FXML
-    private TextField usernameField;
+    private TextField usernameField; // Field to enter username/email
     @FXML
-    private PasswordField passwordField;
+    private PasswordField passwordField; // Field to enter password
     @FXML
-    private Button loginButton;
+    private Button loginButton; // The interactable login button
     @FXML
-    private Label errorLabel;
+    private Label errorLabel; // Error message for invalid credentials
     @FXML
-    private ImageView universityLogo;
+    private ImageView universityLogo; // Image for university logo
 
     @FXML
     public void initialize() {
@@ -51,9 +51,9 @@ public class LoginController {
     private void navigateToDashboard(String role) {
         // Function to load the correct dashboard based on role
         if ("ADMIN".equals(role)) { // load the admin fxml here
-            System.out.println("Redirecting to Admin Dashboard...");
+            System.out.println("Redirecting to Admin dashboard");
         } else if ("USER".equals(role)) { // load the user fxml here
-            System.out.println("Redirecting to User Dashboard...");
+            System.out.println("Redirecting to User dashboard");
         }
         // Close login window
         Stage stage = (Stage) loginButton.getScene().getWindow();
