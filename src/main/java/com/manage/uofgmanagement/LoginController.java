@@ -28,7 +28,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // Sets the logo of the Univeristy
+        // Sets the logo of the University
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
         universityLogo.setImage(image);
     }
