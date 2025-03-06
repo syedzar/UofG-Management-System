@@ -19,7 +19,7 @@ public class ExcelReader {
              Workbook workbook = new XSSFWorkbook(file)) {
 
             // Load Students
-            Sheet studentSheet = workbook.getSheet("Students");
+            Sheet studentSheet = workbook.getSheet("Students ");
             if (studentSheet != null) {
                 for (Row row : studentSheet) {
                     Cell emailCell = row.getCell(4); // Column A
@@ -30,17 +30,17 @@ public class ExcelReader {
                         if (!email.isEmpty() && !password.isEmpty()) {
                             users.put(email, password);
                             roles.put(email, "USER");
+                            System.out.println("Loaded users: " + users);
                         }
                     }
-                    System.out.println("Loaded users: " + users);
                 }
             }
 
             // Load Faculties
-            Sheet facultySheet = workbook.getSheet("Faculties");
+            Sheet facultySheet = workbook.getSheet("Faculties ");
             if (facultySheet != null) {
                 for (Row row : facultySheet) {
-                    Cell emailCell = row.getCell(4); // Column A
+                    Cell emailCell = row.getCell(4); // Column E
                     Cell passwordCell = row.getCell(7); // Column H
                     if (emailCell != null && passwordCell != null) {
                         String email = getCellValue(emailCell);
@@ -48,9 +48,9 @@ public class ExcelReader {
                         if (!email.isEmpty() && !password.isEmpty()) {
                             users.put(email, password);
                             roles.put(email, "ADMIN");
+                            System.out.println("Loaded users: " + users);
                         }
                     }
-                    System.out.println("Loaded users: " + users);
                 }
 
             }
