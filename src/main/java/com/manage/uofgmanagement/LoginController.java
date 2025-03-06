@@ -8,6 +8,10 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import com.manage.uofgmanagement.ExcelReader;
 import java.io.IOException;
+import javafx.fxml.FXML;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.util.Objects;
 
 public class LoginController {
 
@@ -19,6 +23,15 @@ public class LoginController {
     private Button loginButton;
     @FXML
     private Label errorLabel;
+    @FXML
+    private ImageView universityLogo;
+
+    @FXML
+    public void initialize() {
+        // Sets the logo of the Univeristy
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
+        universityLogo.setImage(image);
+    }
 
     @FXML
     private void handleLogin() {
