@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExcelReader {
-    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx";
-    private static final Map<String, String> users = new HashMap<>(); //Hashmap to store all users
-    private static final Map<String, String> roles = new HashMap<>(); //Hashmap to store all roles
+    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx"; // File path to the excel data
+    private static final Map<String, String> users = new HashMap<>(); // Hashmap to store all users
+    private static final Map<String, String> roles = new HashMap<>(); // Hashmap to store all roles
 
     // Load user data from Excel
     public static void loadUserData() {
@@ -67,7 +67,7 @@ public class ExcelReader {
         return null; // Incorrect credentials
     }
 
-    // Helper method to read cell values as correct type
+    // Method to read cell values as correct type
     private static String getCellValue(Cell cell) {
         switch (cell.getCellType()) {
             case STRING: return cell.getStringCellValue().trim(); // If cell is a string
