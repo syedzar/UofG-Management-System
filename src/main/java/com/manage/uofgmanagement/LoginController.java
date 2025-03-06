@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import java.util.Objects;
 
 public class LoginController {
-
     @FXML
     private TextField usernameField;
     @FXML
@@ -23,6 +22,15 @@ public class LoginController {
     private Button loginButton;
     @FXML
     private Label errorLabel;
+    @FXML
+    private ImageView universityLogo;
+
+    @FXML
+    public void initialize() {
+        // Loads the university logo
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
+        universityLogo.setImage(image);
+    }
 
     @FXML
     private void handleLogin() {
