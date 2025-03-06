@@ -23,15 +23,6 @@ public class LoginController {
     private Button loginButton;
     @FXML
     private Label errorLabel;
-    @FXML
-    private ImageView universityLogo;
-
-    @FXML
-    public void initialize() {
-        // Sets the logo of the University
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
-        universityLogo.setImage(image);
-    }
 
     @FXML
     private void handleLogin() {
