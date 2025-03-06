@@ -3,31 +3,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.LoginController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.LoginController"
+            prefWidth="400" prefHeight="300" style="-fx-background-color: #f4f4f4;">
 
-    <top>
-        <Pane prefHeight="60" style="-fx-background-color: #0056b3;">
-            <Label text="University Management System" layoutX="20" layoutY="15"
-                   style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;" />
-        </Pane>
-    </top>
+    <Label text="University Management System" layoutX="50" layoutY="20"
+           style="-fx-font-size: 18px; -fx-text-fill: #1E3A8A; -fx-font-weight: bold;"/>
 
-    <center>
-        <VBox alignment="CENTER" spacing="15">
-            <GridPane alignment="CENTER" hgap="10" vgap="10">
-                <Label text="Email:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <TextField fx:id="emailField" />
-                <Label text="Password:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <PasswordField fx:id="passwordField" />
-            </GridPane>
-            <Button text="Login" fx:id="loginButton" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px;"/>
-            <Label fx:id="errorLabel" style="-fx-text-fill: red;"/>
-        </VBox>
-    </center>
+    <Label text="Email:" layoutX="50" layoutY="70"/>
+    <TextField fx:id="emailField" layoutX="120" layoutY="65" prefWidth="200"/>
 
-    <bottom>
-        <Pane prefHeight="120">
-            <ImageView fx:id="universityLogo" fitHeight="100" fitWidth="100" layoutX="10" layoutY="10"/>
-        </Pane>
-    </bottom>
-</BorderPane>
+    <Label text="Password:" layoutX="50" layoutY="120"/>
+    <PasswordField fx:id="passwordField" layoutX="120" layoutY="115" prefWidth="200"/>
+
+    <Button text="Login" layoutX="150" layoutY="170" fx:id="loginButton"/>
+
+    <ImageView fx:id="universityLogo" fitWidth="80" fitHeight="80"
+               layoutX="300" layoutY="200" preserveRatio="true"/>
+</AnchorPane>
