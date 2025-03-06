@@ -25,7 +25,7 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Use ExcelReader to validate login
+        // Validating login
         String role = ExcelReader.validateUser(username, password);
 
         if (role != null) {
@@ -37,13 +37,11 @@ public class LoginController {
     }
 
     private void navigateToDashboard(String role) {
-        // Function to load the correct dashboard based on role (ADMIN or USER)
-        if ("ADMIN".equals(role)) { //load the admin fxml here
+        // Function to load the correct dashboard based on role
+        if ("ADMIN".equals(role)) { // load the admin fxml here
             System.out.println("Redirecting to Admin Dashboard...");
-            // Load Admin Dashboard
-        } else if ("USER".equals(role)) { //load the user fxml here
+        } else if ("USER".equals(role)) { // load the user fxml here
             System.out.println("Redirecting to User Dashboard...");
-            // Load User Dashboard
         }
         // Close login window
         Stage stage = (Stage) loginButton.getScene().getWindow();

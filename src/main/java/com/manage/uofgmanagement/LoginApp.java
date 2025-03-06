@@ -10,7 +10,7 @@ import static com.manage.uofgmanagement.ExcelReader.loadUserData;
 public class LoginApp extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        ExcelReader.loadUserData();
+        ExcelReader.loadUserData(); // Loading all user data before UI generation
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 400, 300);
         primaryStage.setTitle("University Management System - Login");
