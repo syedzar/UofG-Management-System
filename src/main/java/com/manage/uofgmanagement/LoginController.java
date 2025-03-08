@@ -55,12 +55,9 @@ public class LoginController {
     }
 
     private void navigateToDashboard(String role) {
-        // Function to load the correct dashboard based on role
         if ("ADMIN".equals(role)) { // load the admin FXML here
             System.out.println("Redirecting to Admin dashboard");
             try {
-                // Load the Admin Dashboard FXML file.
-                // Ensure AdminDashboard.fxml is in the resources root (or adjust the path accordingly).
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdminDashboard.fxml"));
                 Parent root = loader.load();
 
@@ -68,7 +65,6 @@ public class LoginController {
                 AdminDashboardController controller = loader.getController();
                 // controller.initializeData(...);
 
-                // Create a new stage for the admin dashboard
                 Stage adminStage = new Stage();
                 adminStage.setScene(new Scene(root));
                 adminStage.setTitle("Admin Dashboard");
@@ -78,7 +74,21 @@ public class LoginController {
             }
         } else if ("USER".equals(role)) { // load the user FXML here
             System.out.println("Redirecting to User dashboard");
-            // TODO: Implement user dashboard loading similarly
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserDashboard.fxml"));
+                Parent root = loader.load();
+
+                // Optionally, get the controller to pass any data:
+                UserDashboardController controller = loader.getController();
+                // controller.initializeData(...);
+
+                Stage userStage = new Stage();
+                userStage.setScene(new Scene(root));
+                userStage.setTitle("User Dashboard");
+                userStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         // Close login window
         Stage stage = (Stage) loginButton.getScene().getWindow();
