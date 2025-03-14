@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Pos?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.manage.uofgmanagement.UserDashboardController"
+      spacing="20" alignment="center" style="-fx-background-color: #f4f4f4;">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: #003366; -fx-padding: 15px;" alignment="center">
+        <Label text="User Dashboard" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- Welcome Section -->
+    <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
+        <Label text="Welcome, " style="-fx-font-size: 16px;"/>
+        <Label fx:id="usernameLabel" text="John Doe" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- Summary Metrics -->
+    <HBox spacing="20" alignment="center" style="-fx-padding: 10px;">
+        <VBox alignment="center" spacing="5">
+            <Label text="Enrolled Courses:" style="-fx-font-size: 14px;"/>
+            <Label fx:id="enrolledCoursesLabel" text="-" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox alignment="center" spacing="5">
+            <Label text="Completed Courses:" style="-fx-font-size: 14px;"/>
+            <Label fx:id="completedCoursesLabel" text="-" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox alignment="center" spacing="5">
+            <Label text="Pending Assignments:" style="-fx-font-size: 14px;"/>
+            <Label fx:id="pendingAssignmentsLabel" text="-" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </VBox>
+        <VBox alignment="center" spacing="5">
+            <Label text="Notifications:" style="-fx-font-size: 14px;"/>
+            <Label fx:id="notificationsLabel" text="-" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        </VBox>
+    </HBox>
+
+    <!-- User Actions -->
+    <GridPane hgap="20" vgap="20" alignment="center" style="-fx-padding: 10px;">
+        <!-- Define column constraints for alignment -->
+        <columnConstraints>
+            <!-- First column for section titles -->
+            <ColumnConstraints halignment="RIGHT" minWidth="150"/>
+            <!-- Second column for buttons -->
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <!-- Profile Management -->
+        <Label text="Profile Management:" style="-fx-font-size: 16px; -fx-font-weight: bold;"
+               GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="center" GridPane.rowIndex="0" GridPane.columnIndex="1">
+            <Button fx:id="viewProfileButton" text="View Profile" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+            <Button fx:id="editProfileButton" text="Edit Profile" style="-fx-background-color: #FFC107; -fx-text-fill: white;"/>
+        </HBox>
+
+        <!-- Course Management -->
+        <Label text="Course Management:" style="-fx-font-size: 16px; -fx-font-weight: bold;"
+               GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="center" GridPane.rowIndex="1" GridPane.columnIndex="1">
+            <Button fx:id="viewCoursesButton" text="View Courses" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+            <Button fx:id="enrollCourseButton" text="Enroll in Course" style="-fx-background-color: #FFC107; -fx-text-fill: white;"/>
+        </HBox>
+
+        <!-- Assignment Management -->
+        <Label text="Assignments:" style="-fx-font-size: 16px; -fx-font-weight: bold;"
+               GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="center" GridPane.rowIndex="2" GridPane.columnIndex="1">
+            <Button fx:id="viewAssignmentsButton" text="View Assignments" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+            <Button fx:id="submitAssignmentButton" text="Submit Assignment" style="-fx-background-color: #FFC107; -fx-text-fill: white;"/>
+        </HBox>
+
+        <!-- Notifications -->
+        <Label text="Notifications:" style="-fx-font-size: 16px; -fx-font-weight: bold;"
+               GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="center" GridPane.rowIndex="3" GridPane.columnIndex="1">
+            <Button fx:id="viewNotificationsButton" text="View Notifications" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        </HBox>
+    </GridPane>
+
+    <!-- Footer -->
+    <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
+        <Label text="© 2025 University Management System" style="-fx-font-size: 12px;"/>
+    </HBox>
+</VBox>
