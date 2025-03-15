@@ -1,7 +1,12 @@
 package com.manage.uofgmanagement;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import java.io.IOException;
 
 public class AdminDashboardController {
 
@@ -91,19 +96,32 @@ public class AdminDashboardController {
     @FXML
     private void handleAddFacultyAction() {
         System.out.println("Add Faculty button clicked!");
-        // TODO: Open the "Add Faculty" form/window
+        openFacultyManagementPage();
     }
+    // Open Faculty Management Page
+    private void openFacultyManagementPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/FacultyManagement.fxml"));
+            Parent root = loader.load();
 
+            Stage facultyStage = new Stage();
+            facultyStage.setScene(new Scene(root));
+            facultyStage.setTitle("Faculty Management");
+            facultyStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void handleEditFacultyAction() {
         System.out.println("Edit Faculty button clicked!");
-        // TODO: Open the "Edit Faculty" form/window
+        // TODO: Implement Edit Faculty functionality
     }
 
     @FXML
     private void handleDeleteFacultyAction() {
         System.out.println("Delete Faculty button clicked!");
-        // TODO: Confirm and delete the selected faculty member
+        // TODO: Implement Delete Faculty functionality
     }
 
     // Event Management Actions
@@ -125,11 +143,10 @@ public class AdminDashboardController {
         // TODO: Confirm and delete the selected event
     }
 
-    // This method is automatically called after the FXML file is loaded.
+
     @FXML
     public void initialize() {
         System.out.println("Admin Dashboard initialized.");
         // TODO: Set up initial data, bind data to UI controls, etc.
     }
 }
-

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.FacultyManagementController">
+    <VBox spacing="10" alignment="CENTER">
+        <Label text="Faculty Management" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+        <ListView fx:id="facultyListView" prefHeight="200" prefWidth="300" />
+
+        <HBox spacing="10">
+            <Button text="Add Faculty" onAction="#handleAddFaculty" />
+            <Button text="Edit Faculty" onAction="#handleEditFaculty" />
+            <Button text="Delete Faculty" onAction="#handleDeleteFaculty" />
+        </HBox>
+
+        <HBox spacing="10">
+            <Button text="View Profile" onAction="#handleViewProfile" />
+            <Button text="Assign Courses" onAction="#handleAssignCourses" />
+        </HBox>
+    </VBox>
+</AnchorPane>
