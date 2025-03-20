@@ -41,6 +41,9 @@ public class UserDashboardController implements Initializable {
     private Button viewCoursesButton;
 
     @FXML
+    private Button viewCourses2Button;  // Button for View Courses 2
+
+    @FXML
     private Button enrollCourseButton;
 
     @FXML
@@ -65,6 +68,7 @@ public class UserDashboardController implements Initializable {
         viewProfileButton.setOnAction(this::handleViewProfile);
         editProfileButton.setOnAction(this::handleEditProfile);
         viewCoursesButton.setOnAction(this::handleViewCourses);
+        viewCourses2Button.setOnAction(this::handleViewCourses2);  // Event for View Courses 2
         enrollCourseButton.setOnAction(this::handleEnrollCourse);
         viewAssignmentsButton.setOnAction(this::handleViewAssignments);
         submitAssignmentButton.setOnAction(this::handleSubmitAssignment);
@@ -97,6 +101,23 @@ public class UserDashboardController implements Initializable {
         }
     }
 
+    private void handleViewCourses2(ActionEvent event) {
+        // Code to open Course Dashboard for View Courses 2
+        System.out.println("View Courses 2 button clicked.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CourseDashboard.fxml"));
+            Parent root = loader.load();
+
+            // Stage for Course Dashboard
+            Stage courseViewStage = new Stage();
+            courseViewStage.setTitle("Course Dashboard");
+            courseViewStage.setScene(new Scene(root));
+            courseViewStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void handleEnrollCourse(ActionEvent event) {
         // Add code to handle course enrollment.
         System.out.println("Enroll in Course button clicked.");
@@ -117,4 +138,3 @@ public class UserDashboardController implements Initializable {
         System.out.println("View Notifications button clicked.");
     }
 }
-

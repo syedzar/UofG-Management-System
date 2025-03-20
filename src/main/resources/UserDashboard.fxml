@@ -46,9 +46,7 @@
     <GridPane hgap="20" vgap="20" alignment="center" style="-fx-padding: 10px;">
         <!-- Define column constraints for alignment -->
         <columnConstraints>
-            <!-- First column for section titles -->
             <ColumnConstraints halignment="RIGHT" minWidth="150"/>
-            <!-- Second column for buttons -->
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS"/>
         </columnConstraints>
 
@@ -81,6 +79,13 @@
                GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <HBox spacing="10" alignment="center" GridPane.rowIndex="3" GridPane.columnIndex="1">
             <Button fx:id="viewNotificationsButton" text="View Notifications" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+        </HBox>
+
+        <!-- Course Management2 -->
+        <Label text="Course Management2:" style="-fx-font-size: 16px; -fx-font-weight: bold;"
+               GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="center" GridPane.rowIndex="4" GridPane.columnIndex="1">
+            <Button fx:id="viewCourses2Button" text="View Courses2" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
         </HBox>
     </GridPane>
 
