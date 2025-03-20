@@ -1,267 +1,299 @@
 package com.manage.uofgmanagement;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ButtonType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javafx.scene.Scene;
+import java.io.*;
+import java.util.*;
 
 public class FacultyManagementController {
 
     @FXML
     private ListView<String> facultyListView;
 
-    @FXML
-    private Button addFacultyButton, editFacultyButton, deleteFacultyButton, viewProfileButton, assignCoursesButton;
+    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx"; // Update this with actual file path
+    private static final String SHEET_NAME = "Faculties ";
 
     private List<Faculty> facultyList = new ArrayList<>();
 
-    // Sample Faculty class to hold the faculty data
     public static class Faculty {
+        String id;
         String name;
+        String degree;
+        String researchInterest;
         String email;
+        String officeLocation;
+        String coursesOffered;
         String password;
 
-        Faculty(String name, String email, String password) {
+        Faculty(String id, String name, String degree, String researchInterest, String email, String officeLocation, String coursesOffered, String password) {
+            this.id = id;
             this.name = name;
+            this.degree = degree;
+            this.researchInterest = researchInterest;
             this.email = email;
+            this.officeLocation = officeLocation;
+            this.coursesOffered = coursesOffered;
             this.password = password;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
+        public String getId() { return id; }
+        public String getName() { return name; }
+        public String getEmail() { return email; }
+        public String getPassword() { return password; }
         @Override
-        public String toString() {
-            return name;
-        }
+        public String toString() { return name; }
     }
 
-    public FacultyManagementController() {
-        // Sample Data - You can replace this with actual loading from a file or database
-        facultyList.add(new Faculty("John Doe", "john.doe@university.com", "password123"));
-        facultyList.add(new Faculty("Jane Smith", "jane.smith@university.com", "password123"));
+    @FXML
+    public void initialize() {
+        loadFacultyData();
+    }
+
+    private void loadFacultyData() {
+        facultyList.clear();
+        facultyListView.getItems().clear();
+        try (FileInputStream fis = new FileInputStream("src/main/resources/UMS_Data.xlsx");
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheet("Faculties ");
+            if (sheet == null) return;
+
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue; // Skip header row
+
+                Faculty faculty = new Faculty(
+                        row.getCell(0).getStringCellValue(), // Faculty ID
+                        row.getCell(1).getStringCellValue(), // Name
+                        row.getCell(2).getStringCellValue(), // Degree
+                        row.getCell(3).getStringCellValue(), // Research Interest
+                        row.getCell(4).getStringCellValue(), // Email
+                        row.getCell(5).getStringCellValue(), // Office Location
+                        row.getCell(6).getStringCellValue(), // Courses Offered
+                        row.getCell(7).getStringCellValue()  // Password
+                );
+                facultyList.add(faculty);
+                facultyListView.getItems().add(faculty.toString()); // Display "FXXXX - Name"
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleAddFaculty() {
-        // Create a dialog to add a new faculty
-        Stage addFacultyStage = new Stage();
+        Stage stage = new Stage();
         VBox vbox = new VBox(10);
-
-        Label nameLabel = new Label("Name:");
         TextField nameField = new TextField();
-        Label emailLabel = new Label("Email:");
+        TextField degreeField = new TextField();
+        TextField researchField = new TextField();
         TextField emailField = new TextField();
-        Label passwordLabel = new Label("Password:");
+        TextField officeField = new TextField();
+        TextField coursesField = new TextField();
         PasswordField passwordField = new PasswordField();
-
         Button submitButton = new Button("Add Faculty");
 
         submitButton.setOnAction(event -> {
-            String name = nameField.getText();
-            String email = emailField.getText();
-            String password = passwordField.getText();
-
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                showAlert(AlertType.ERROR, "All fields are required!");
-            } else {
-                // Add new faculty to the list
-                Faculty newFaculty = new Faculty(name, email, password);
-                facultyList.add(newFaculty);
-                facultyListView.getItems().add(name); // Add faculty name to the ListView
-                addFacultyStage.close();
-            }
+            String id = generateUniqueFacultyID();
+            Faculty newFaculty = new Faculty(id, nameField.getText(), degreeField.getText(), researchField.getText(),
+                    emailField.getText(), officeField.getText(), coursesField.getText(), passwordField.getText());
+            facultyList.add(newFaculty);
+            saveFacultyData();
+            loadFacultyData();
+            stage.close();
         });
 
-        vbox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, passwordLabel, passwordField, submitButton);
-        Scene scene = new Scene(vbox, 300, 250);
-        addFacultyStage.setScene(scene);
-        addFacultyStage.setTitle("Add Faculty");
-        addFacultyStage.show();
+        vbox.getChildren().addAll(new Label("Name:"), nameField, new Label("Degree:"), degreeField,
+                new Label("Research Interest:"), researchField, new Label("Email:"), emailField,
+                new Label("Office Location:"), officeField, new Label("Courses Offered:"), coursesField,
+                new Label("Password:"), passwordField, submitButton);
+        stage.setScene(new Scene(vbox, 300, 400));
+        stage.setTitle("Add Faculty");
+        stage.show();
+    }
+
+    private void saveFacultyData() {
+        try (FileInputStream fis = new FileInputStream(FILE_PATH); XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+            Sheet sheet = workbook.getSheet(SHEET_NAME);
+            if (sheet == null) sheet = workbook.createSheet(SHEET_NAME);
+            int rowNum = 1;
+            for (Faculty faculty : facultyList) {
+                Row row = sheet.getRow(rowNum);
+                if (row == null) row = sheet.createRow(rowNum);
+                row.createCell(0).setCellValue(faculty.getId());
+                row.createCell(1).setCellValue(faculty.getName());
+                row.createCell(2).setCellValue(faculty.degree);
+                row.createCell(3).setCellValue(faculty.researchInterest);
+                row.createCell(4).setCellValue(faculty.getEmail());
+                row.createCell(5).setCellValue(faculty.officeLocation);
+                row.createCell(6).setCellValue(faculty.coursesOffered);
+                row.createCell(7).setCellValue(faculty.getPassword());
+                rowNum++;
+            }
+            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
+                workbook.write(fos);
+            }
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private String generateUniqueFacultyID() {
+        int maxNum = 0;
+        for (Faculty faculty : facultyList) {
+            String numPart = faculty.getId().substring(1);
+            maxNum = Math.max(maxNum, Integer.parseInt(numPart));
+        }
+        return "F" + String.format("%04d", maxNum + 1);
     }
 
     @FXML
     private void handleEditFaculty() {
-        String selectedFacultyName = facultyListView.getSelectionModel().getSelectedItem();
-        if (selectedFacultyName == null) {
-            showAlert(AlertType.WARNING, "Please select a faculty to edit.");
-            return;
-        }
-
-        // Find the faculty object based on the selected name
-        Faculty selectedFaculty = null;
-        for (Faculty faculty : facultyList) {
-            if (faculty.getName().equals(selectedFacultyName)) {
-                selectedFaculty = faculty;
-                break;
-            }
-        }
-
+        String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
         if (selectedFaculty == null) {
-            showAlert(AlertType.ERROR, "Selected faculty not found.");
+            showAlert(Alert.AlertType.WARNING, "Please select a faculty to edit.");
             return;
         }
 
-        // Create a new dialog to edit faculty
-        Stage editFacultyStage = new Stage();
+        String selectedID = selectedFaculty.split(" - ")[0]; // Extract ID (FXXXX format)
+        Faculty faculty = facultyList.stream()
+                .filter(f -> f.id.equals(selectedID))
+                .findFirst().orElse(null);
+
+        if (faculty == null) {
+            showAlert(Alert.AlertType.ERROR, "Faculty not found.");
+            return;
+        }
+
+        Stage editStage = new Stage();
         VBox vbox = new VBox(10);
-
-        Label nameLabel = new Label("Name:");
-        TextField nameField = new TextField(selectedFaculty.getName());
-        Label emailLabel = new Label("Email:");
-        TextField emailField = new TextField(selectedFaculty.getEmail());
-        Label passwordLabel = new Label("Password:");
+        TextField nameField = new TextField(faculty.name);
+        TextField degreeField = new TextField(faculty.degree);
+        TextField researchField = new TextField(faculty.researchInterest);
+        TextField emailField = new TextField(faculty.email);
+        TextField officeField = new TextField(faculty.officeLocation);
+        TextField coursesField = new TextField(faculty.coursesOffered);
         PasswordField passwordField = new PasswordField();
-        passwordField.setText(selectedFaculty.getPassword());
+        passwordField.setText(faculty.password);
 
-        Button submitButton = new Button("Update Faculty");
+        Button saveButton = new Button("Save Changes");
+        saveButton.setOnAction(event -> {
+            faculty.name = nameField.getText();
+            faculty.degree = degreeField.getText();
+            faculty.researchInterest = researchField.getText();
+            faculty.email = emailField.getText();
+            faculty.officeLocation = officeField.getText();
+            faculty.coursesOffered = coursesField.getText();
+            faculty.password = passwordField.getText();
 
-        Faculty finalSelectedFaculty = selectedFaculty;
-        submitButton.setOnAction(event -> {
-            String name = nameField.getText();
-            String email = emailField.getText();
-            String password = passwordField.getText();
-
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                showAlert(AlertType.ERROR, "All fields are required!");
-            } else {
-                // Update the Faculty object in the model
-                finalSelectedFaculty.name = name;
-                finalSelectedFaculty.email = email;
-                finalSelectedFaculty.password = password;
-
-                // Now update the ListView
-                // Ensure facultyListView is synchronized with facultyList
-                facultyListView.getItems().clear();  // Clear current items
-                facultyListView.getItems().addAll(getFacultyNames());  // Add updated items (faculty names)
-
-                editFacultyStage.close();
-            }
+            updateFacultyInExcel(faculty);
+            loadFacultyData();
+            editStage.close();
         });
 
-        vbox.getChildren().addAll(nameLabel, nameField, emailLabel, emailField, passwordLabel, passwordField, submitButton);
-        Scene scene = new Scene(vbox, 300, 250);
-        editFacultyStage.setScene(scene);
-        editFacultyStage.setTitle("Edit Faculty");
-        editFacultyStage.show();
+        vbox.getChildren().addAll(new Label("Name:"), nameField, new Label("Degree:"), degreeField,
+                new Label("Research Interest:"), researchField, new Label("Email:"), emailField,
+                new Label("Office Location:"), officeField, new Label("Courses Offered:"), coursesField,
+                new Label("Password:"), passwordField, saveButton);
+
+        editStage.setScene(new Scene(vbox, 350, 400));
+        editStage.setTitle("Edit Faculty");
+        editStage.show();
     }
 
-    // Utility method to get faculty names for the ListView
-    private List<String> getFacultyNames() {
-        List<String> names = new ArrayList<>();
-        for (Faculty faculty : facultyList) {
-            names.add(faculty.getName());
-        }
-        return names;
-    }
+    private void updateFacultyInExcel(Faculty updatedFaculty) {
+        try (FileInputStream fis = new FileInputStream(FILE_PATH);
+             Workbook workbook = new XSSFWorkbook(fis)) {
 
-    @FXML
-    private void handleDeleteFaculty() {
-        String selectedFacultyName = facultyListView.getSelectionModel().getSelectedItem();
-        if (selectedFacultyName == null) {
-            showAlert(AlertType.WARNING, "Please select a faculty to delete.");
-            return;
-        }
+            Sheet sheet = workbook.getSheet(SHEET_NAME);
+            if (sheet == null) return;
 
-        // Confirm deletion
-        Alert confirmDeletionAlert = new Alert(AlertType.CONFIRMATION);
-        confirmDeletionAlert.setTitle("Delete Faculty");
-        confirmDeletionAlert.setHeaderText("Are you sure you want to delete the selected faculty?");
-        Optional<ButtonType> result = confirmDeletionAlert.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Remove faculty from the list
-            Faculty selectedFaculty = null;
-            for (Faculty faculty : facultyList) {
-                if (faculty.getName().equals(selectedFacultyName)) {
-                    selectedFaculty = faculty;
+            for (Row row : sheet) {
+                if (row.getCell(0).getStringCellValue().equals(updatedFaculty.id)) {
+                    row.getCell(1).setCellValue(updatedFaculty.name);
+                    row.getCell(2).setCellValue(updatedFaculty.degree);
+                    row.getCell(3).setCellValue(updatedFaculty.researchInterest);
+                    row.getCell(4).setCellValue(updatedFaculty.email);
+                    row.getCell(5).setCellValue(updatedFaculty.officeLocation);
+                    row.getCell(6).setCellValue(updatedFaculty.coursesOffered);
+                    row.getCell(7).setCellValue(updatedFaculty.password);
                     break;
                 }
             }
 
-            if (selectedFaculty != null) {
-                facultyList.remove(selectedFaculty);
-                facultyListView.getItems().remove(selectedFacultyName);
+            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
+                workbook.write(fos);
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleDeleteFaculty() {
+        String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
+        if (selectedFaculty == null) {
+            showAlert(Alert.AlertType.WARNING, "Please select a faculty to delete.");
+            return;
+        }
+
+        String selectedID = selectedFaculty.split(" - ")[0]; // Extract Faculty ID
+        facultyList.removeIf(faculty -> faculty.id.equals(selectedID));
+        deleteFacultyFromExcel(selectedID);
+        loadFacultyData();
+    }
+
+    private void deleteFacultyFromExcel(String facultyID) {
+        try (FileInputStream fis = new FileInputStream(FILE_PATH);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheet(SHEET_NAME);
+            if (sheet == null) return;
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row.getCell(0).getStringCellValue().equals(facultyID)) {
+                    sheet.removeRow(row);
+                    break;
+                }
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
+                workbook.write(fos);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     @FXML
     private void handleViewProfile() {
-        String selectedFacultyName = facultyListView.getSelectionModel().getSelectedItem();
-        if (selectedFacultyName == null) {
-            showAlert(AlertType.WARNING, "Please select a faculty to view.");
+        String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
+        if (selectedFaculty == null) {
+            showAlert(Alert.AlertType.WARNING, "Please select a faculty.");
             return;
         }
 
-        Faculty selectedFaculty = null;
-        for (Faculty faculty : facultyList) {
-            if (faculty.getName().equals(selectedFacultyName)) {
-                selectedFaculty = faculty;
-                break;
-            }
-        }
+        String selectedID = selectedFaculty.split(" - ")[0]; // Extract Faculty ID
+        Faculty faculty = facultyList.stream()
+                .filter(f -> f.id.equals(selectedID))
+                .findFirst().orElse(null);
 
-        if (selectedFaculty == null) {
-            showAlert(AlertType.ERROR, "Selected faculty not found.");
-        } else {
-            // Show the profile information in an alert
-            showAlert(AlertType.INFORMATION, "Faculty Profile:\nName: " + selectedFaculty.getName() +
-                    "\nEmail: " + selectedFaculty.getEmail());
+        if (faculty != null) {
+            showAlert(Alert.AlertType.INFORMATION,
+                    "ID: " + faculty.id + "\nName: " + faculty.name + "\nEmail: " + faculty.email +
+                            "\nDegree: " + faculty.degree + "\nResearch: " + faculty.researchInterest);
         }
     }
 
-    @FXML
-    private void handleAssignCourses() {
-        String selectedFacultyName = facultyListView.getSelectionModel().getSelectedItem();
-        if (selectedFacultyName == null) {
-            showAlert(AlertType.WARNING, "Please select a faculty to assign courses.");
-            return;
-        }
-
-        Faculty selectedFaculty = null;
-        for (Faculty faculty : facultyList) {
-            if (faculty.getName().equals(selectedFacultyName)) {
-                selectedFaculty = faculty;
-                break;
-            }
-        }
-
-        if (selectedFaculty == null) {
-            showAlert(AlertType.ERROR, "Selected faculty not found.");
-        } else {
-            // Logic to assign courses
-            showAlert(AlertType.INFORMATION, "Assign courses to: " + selectedFaculty.getName());
-        }
-    }
-
-    // Utility method to show alerts
-    private void showAlert(AlertType alertType, String content) {
-        Alert alert = new Alert(alertType);
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
         alert.setTitle("Faculty Management");
-        alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

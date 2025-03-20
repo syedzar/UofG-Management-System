@@ -96,14 +96,9 @@ public class AdminDashboardController {
     @FXML
     private void handleAddFacultyAction() {
         System.out.println("Add Faculty button clicked!");
-        openFacultyManagementPage();
-    }
-    // Open Faculty Management Page
-    private void openFacultyManagementPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/FacultyManagement.fxml"));
             Parent root = loader.load();
-
             Stage facultyStage = new Stage();
             facultyStage.setScene(new Scene(root));
             facultyStage.setTitle("Faculty Management");
@@ -112,6 +107,7 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleEditFacultyAction() {
         System.out.println("Edit Faculty button clicked!");

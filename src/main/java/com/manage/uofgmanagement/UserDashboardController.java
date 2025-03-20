@@ -1,11 +1,16 @@
 package com.manage.uofgmanagement;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -79,6 +84,17 @@ public class UserDashboardController implements Initializable {
     private void handleViewCourses(ActionEvent event) {
         // Add code to handle viewing courses.
         System.out.println("View Courses button clicked.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ViewSubjects.fxml"));
+            Parent root = loader.load();
+
+            Stage facultyStage = new Stage();
+            facultyStage.setScene(new Scene(root));
+            facultyStage.setTitle("Course View");
+            facultyStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleEnrollCourse(ActionEvent event) {
