@@ -68,7 +68,7 @@ public class ExcelReader {
     }
 
     // Method to read cell values as correct type
-    private static String getCellValue(Cell cell) {
+    public static String getCellValue(Cell cell) {
         switch (cell.getCellType()) {
             case STRING: return cell.getStringCellValue().trim(); // If cell is a string
             case NUMERIC: return String.valueOf((int) cell.getNumericCellValue()); // If cell is numeric
