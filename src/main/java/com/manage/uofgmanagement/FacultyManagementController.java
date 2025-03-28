@@ -1,93 +1,96 @@
 package com.manage.uofgmanagement;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
-import java.io.*;
-import java.util.*;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FacultyManagementController {
+    @FXML private Button editFacultyButton;
+    @FXML private Button deleteFacultyButton;
+    @FXML private Button viewProfileButton;
+    @FXML private Button addFacultyButton;
 
     @FXML
     private ListView<String> facultyListView;
 
-    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx"; // Update this with actual file path
-    private static final String SHEET_NAME = "Faculties ";
-
-    private List<Faculty> facultyList = new ArrayList<>();
-
-    public static class Faculty {
-        String id;
-        String name;
-        String degree;
-        String researchInterest;
-        String email;
-        String officeLocation;
-        String coursesOffered;
-        String password;
-
-        Faculty(String id, String name, String degree, String researchInterest, String email, String officeLocation, String coursesOffered, String password) {
-            this.id = id;
-            this.name = name;
-            this.degree = degree;
-            this.researchInterest = researchInterest;
-            this.email = email;
-            this.officeLocation = officeLocation;
-            this.coursesOffered = coursesOffered;
-            this.password = password;
-        }
-
-        public String getId() { return id; }
-        public String getName() { return name; }
-        public String getEmail() { return email; }
-        public String getPassword() { return password; }
-        @Override
-        public String toString() { return name; }
-    }
+    private static final String DB_URL = "jdbc:sqlite:src/main/resources/faculty.db"; // SQLite database file
 
     @FXML
     public void initialize() {
         loadFacultyData();
+        loadFacultyList();
     }
 
-    private void loadFacultyData() {
-        facultyList.clear();
+    private Connection connect() {
+        try {
+            return DriverManager.getConnection(DB_URL);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void createTableIfNotExists() { // Creates the faculties table incase if it does not exist
+        String sql = "CREATE TABLE IF NOT EXISTS Faculties (" +
+                "faculty_id TEXT PRIMARY KEY, " +
+                "name TEXT, " +
+                "degree TEXT, " +
+                "research_interest TEXT, " +
+                "email TEXT, " +
+                "office_location TEXT, " +
+                "courses_offered TEXT, " +
+                "password TEXT)";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFacultyData() { // Loading all exist faculty members in the database
         facultyListView.getItems().clear();
-        try (FileInputStream fis = new FileInputStream("src/main/resources/UMS_Data.xlsx");
-             Workbook workbook = new XSSFWorkbook(fis)) {
+        String sql = "SELECT faculty_id, name FROM Faculties"; // Format of "ID(FXXXX) - Name"
 
-            Sheet sheet = workbook.getSheet("Faculties ");
-            if (sheet == null) return;
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // Skip header row
-
-                Faculty faculty = new Faculty(
-                        row.getCell(0).getStringCellValue(), // Faculty ID
-                        row.getCell(1).getStringCellValue(), // Name
-                        row.getCell(2).getStringCellValue(), // Degree
-                        row.getCell(3).getStringCellValue(), // Research Interest
-                        row.getCell(4).getStringCellValue(), // Email
-                        row.getCell(5).getStringCellValue(), // Office Location
-                        row.getCell(6).getStringCellValue(), // Courses Offered
-                        row.getCell(7).getStringCellValue()  // Password
-                );
-                facultyList.add(faculty);
-                facultyListView.getItems().add(faculty.toString()); // Display "FXXXX - Name"
+            while (rs.next()) {
+                String facultyInfo = rs.getString("faculty_id") + " - " + rs.getString("name");
+                facultyListView.getItems().add(facultyInfo);
             }
-        } catch (IOException e) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadFacultyList() { // Displays all the previously loaded faculty member data
+        facultyListView.getItems().clear();
+        try (Connection conn = connect()) {
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT name FROM Faculties")) {
+                while (rs.next()) {
+                    facultyListView.getItems().add(rs.getString("name"));
+                }
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleAddFaculty() {
-        Stage stage = new Stage();
+    private void handleAddFaculty() { // Function to add a faculty member
+        Stage addFacultyStage = new Stage();
         VBox vbox = new VBox(10);
+
+        //Corresponding text fields for the fields of a faculty member
         TextField nameField = new TextField();
         TextField degreeField = new TextField();
         TextField researchField = new TextField();
@@ -98,195 +101,183 @@ public class FacultyManagementController {
         Button submitButton = new Button("Add Faculty");
 
         submitButton.setOnAction(event -> {
-            String id = generateUniqueFacultyID();
-            Faculty newFaculty = new Faculty(id, nameField.getText(), degreeField.getText(), researchField.getText(),
-                    emailField.getText(), officeField.getText(), coursesField.getText(), passwordField.getText());
-            facultyList.add(newFaculty);
-            saveFacultyData();
-            loadFacultyData();
-            stage.close();
+            String name = nameField.getText();
+            String degree = degreeField.getText();
+            String research = researchField.getText();
+            String email = emailField.getText();
+            String office = officeField.getText();
+            String courses = coursesField.getText();
+            String password = passwordField.getText();
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) { // Ensures all fields are filled
+                showAlert(Alert.AlertType.ERROR, "All fields are required!");
+            } else {
+                addFacultyToDatabase(name, degree, research, email, office, courses, password);
+                loadFacultyList();
+                addFacultyStage.close();
+            }
         });
 
         vbox.getChildren().addAll(new Label("Name:"), nameField, new Label("Degree:"), degreeField,
                 new Label("Research Interest:"), researchField, new Label("Email:"), emailField,
                 new Label("Office Location:"), officeField, new Label("Courses Offered:"), coursesField,
                 new Label("Password:"), passwordField, submitButton);
-        stage.setScene(new Scene(vbox, 300, 400));
-        stage.setTitle("Add Faculty");
-        stage.show();
+        addFacultyStage.setScene(new Scene(vbox, 300, 500));
+        addFacultyStage.setTitle("Add Faculty");
+        addFacultyStage.show();
     }
 
-    private void saveFacultyData() {
-        try (FileInputStream fis = new FileInputStream(FILE_PATH); XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
-            Sheet sheet = workbook.getSheet(SHEET_NAME);
-            if (sheet == null) sheet = workbook.createSheet(SHEET_NAME);
-            int rowNum = 1;
-            for (Faculty faculty : facultyList) {
-                Row row = sheet.getRow(rowNum);
-                if (row == null) row = sheet.createRow(rowNum);
-                row.createCell(0).setCellValue(faculty.getId());
-                row.createCell(1).setCellValue(faculty.getName());
-                row.createCell(2).setCellValue(faculty.degree);
-                row.createCell(3).setCellValue(faculty.researchInterest);
-                row.createCell(4).setCellValue(faculty.getEmail());
-                row.createCell(5).setCellValue(faculty.officeLocation);
-                row.createCell(6).setCellValue(faculty.coursesOffered);
-                row.createCell(7).setCellValue(faculty.getPassword());
-                rowNum++;
-            }
-            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
-                workbook.write(fos);
-            }
-        } catch (IOException e) { e.printStackTrace(); }
-    }
+    // Function that saves the newly created faculty member into the actual SQLite database for future access
+    private void addFacultyToDatabase(String name, String degree, String research, String email, String office, String courses, String password) {
+        try (Connection conn = connect()) {
+            try (Statement stmt = conn.createStatement()) {
 
-    private String generateUniqueFacultyID() {
-        int maxNum = 0;
-        for (Faculty faculty : facultyList) {
-            String numPart = faculty.getId().substring(1);
-            maxNum = Math.max(maxNum, Integer.parseInt(numPart));
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM Faculties");
+                rs.next();
+                int count = rs.getInt("count") + 1;
+                String facultyId = String.format("F%04d", count);
+
+                //Inserts the member accordingly to the fields
+                String sql = "INSERT INTO Faculties (faculty_id, name, degree, research_interest, email, office_location, courses_offered, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, facultyId);
+                    pstmt.setString(2, name);
+                    pstmt.setString(3, degree);
+                    pstmt.setString(4, research);
+                    pstmt.setString(5, email);
+                    pstmt.setString(6, office);
+                    pstmt.setString(7, courses);
+                    pstmt.setString(8, password);
+                    pstmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return "F" + String.format("%04d", maxNum + 1);
     }
 
     @FXML
-    private void handleEditFaculty() {
+    private void handleEditFaculty() { // Function that allows you to select a faculty member and edit their info
         String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
         if (selectedFaculty == null) {
             showAlert(Alert.AlertType.WARNING, "Please select a faculty to edit.");
             return;
         }
 
-        String selectedID = selectedFaculty.split(" - ")[0]; // Extract ID (FXXXX format)
-        Faculty faculty = facultyList.stream()
-                .filter(f -> f.id.equals(selectedID))
-                .findFirst().orElse(null);
+        String selectedID = selectedFaculty.split(" - ")[0]; // Extract Faculty ID
 
-        if (faculty == null) {
-            showAlert(Alert.AlertType.ERROR, "Faculty not found.");
-            return;
-        }
-
-        Stage editStage = new Stage();
-        VBox vbox = new VBox(10);
-        TextField nameField = new TextField(faculty.name);
-        TextField degreeField = new TextField(faculty.degree);
-        TextField researchField = new TextField(faculty.researchInterest);
-        TextField emailField = new TextField(faculty.email);
-        TextField officeField = new TextField(faculty.officeLocation);
-        TextField coursesField = new TextField(faculty.coursesOffered);
-        PasswordField passwordField = new PasswordField();
-        passwordField.setText(faculty.password);
-
-        Button saveButton = new Button("Save Changes");
-        saveButton.setOnAction(event -> {
-            faculty.name = nameField.getText();
-            faculty.degree = degreeField.getText();
-            faculty.researchInterest = researchField.getText();
-            faculty.email = emailField.getText();
-            faculty.officeLocation = officeField.getText();
-            faculty.coursesOffered = coursesField.getText();
-            faculty.password = passwordField.getText();
-
-            updateFacultyInExcel(faculty);
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Faculties WHERE faculty_id = ?")) {
+            stmt.setString(1, selectedID);
+            ResultSet rs = stmt.executeQuery();
             loadFacultyData();
-            editStage.close();
-        });
 
-        vbox.getChildren().addAll(new Label("Name:"), nameField, new Label("Degree:"), degreeField,
-                new Label("Research Interest:"), researchField, new Label("Email:"), emailField,
-                new Label("Office Location:"), officeField, new Label("Courses Offered:"), coursesField,
-                new Label("Password:"), passwordField, saveButton);
+            if (rs.next()) {
+                Stage editStage = new Stage();
+                VBox vbox = new VBox(10);
 
-        editStage.setScene(new Scene(vbox, 350, 400));
-        editStage.setTitle("Edit Faculty");
-        editStage.show();
+                // All the necessary text fields to fill out
+                TextField nameField = new TextField(rs.getString("name"));
+                TextField degreeField = new TextField(rs.getString("degree"));
+                TextField researchField = new TextField(rs.getString("research_interest"));
+                TextField emailField = new TextField(rs.getString("email"));
+                TextField officeField = new TextField(rs.getString("office_location"));
+                TextField coursesField = new TextField(rs.getString("courses_offered"));
+                PasswordField passwordField = new PasswordField();
+                passwordField.setText(rs.getString("password"));
+
+                Button saveButton = new Button("Save Changes"); // Updates the new info into the faculty member
+                saveButton.setOnAction(event -> {
+                    updateFaculty(selectedID, nameField.getText(), degreeField.getText(), researchField.getText(),
+                            emailField.getText(), officeField.getText(), coursesField.getText(), passwordField.getText());
+                    loadFacultyData();
+                    editStage.close();
+                });
+
+                vbox.getChildren().addAll(new Label("Name:"), nameField, new Label("Degree:"), degreeField,
+                        new Label("Research Interest:"), researchField, new Label("Email:"), emailField,
+                        new Label("Office Location:"), officeField, new Label("Courses Offered:"), coursesField,
+                        new Label("Password:"), passwordField, saveButton);
+
+                editStage.setScene(new Scene(vbox, 350, 500));
+                editStage.setTitle("Edit Faculty");
+                editStage.show();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void updateFacultyInExcel(Faculty updatedFaculty) {
-        try (FileInputStream fis = new FileInputStream(FILE_PATH);
-             Workbook workbook = new XSSFWorkbook(fis)) {
+    // Function that updates the newly edited faculty data into the selected faculty member
+    @FXML
+    private void updateFaculty(String id, String name, String degree, String research, String email, String office, String courses, String password) {
+        String sql = "UPDATE Faculties SET name = ?, degree = ?, research_interest = ?, email = ?, office_location = ?, courses_offered = ?, password = ? WHERE faculty_id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            Sheet sheet = workbook.getSheet(SHEET_NAME);
-            if (sheet == null) return;
+            stmt.setString(2, name);
+            stmt.setString(3, degree);
+            stmt.setString(4, research);
+            stmt.setString(5, email);
+            stmt.setString(6, office);
+            stmt.setString(7, courses);
+            stmt.setString(8, password);
+            stmt.setString(1, id);
 
-            for (Row row : sheet) {
-                if (row.getCell(0).getStringCellValue().equals(updatedFaculty.id)) {
-                    row.getCell(1).setCellValue(updatedFaculty.name);
-                    row.getCell(2).setCellValue(updatedFaculty.degree);
-                    row.getCell(3).setCellValue(updatedFaculty.researchInterest);
-                    row.getCell(4).setCellValue(updatedFaculty.email);
-                    row.getCell(5).setCellValue(updatedFaculty.officeLocation);
-                    row.getCell(6).setCellValue(updatedFaculty.coursesOffered);
-                    row.getCell(7).setCellValue(updatedFaculty.password);
-                    break;
-                }
-            }
-
-            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
-                workbook.write(fos);
-            }
-
-        } catch (IOException e) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleDeleteFaculty() {
+    private void handleDeleteFaculty() { // Function that allows you to select and delete a faculty member
         String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
         if (selectedFaculty == null) {
             showAlert(Alert.AlertType.WARNING, "Please select a faculty to delete.");
             return;
         }
 
-        String selectedID = selectedFaculty.split(" - ")[0]; // Extract Faculty ID
-        facultyList.removeIf(faculty -> faculty.id.equals(selectedID));
-        deleteFacultyFromExcel(selectedID);
-        loadFacultyData();
-    }
+        String selectedID = selectedFaculty.split(" - ")[0];
+        String sql = "DELETE FROM Faculties WHERE faculty_id = ?";
 
-    private void deleteFacultyFromExcel(String facultyID) {
-        try (FileInputStream fis = new FileInputStream(FILE_PATH);
-             Workbook workbook = new XSSFWorkbook(fis)) {
-
-            Sheet sheet = workbook.getSheet(SHEET_NAME);
-            if (sheet == null) return;
-
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                if (row.getCell(0).getStringCellValue().equals(facultyID)) {
-                    sheet.removeRow(row);
-                    break;
-                }
-            }
-
-            try (FileOutputStream fos = new FileOutputStream(FILE_PATH)) {
-                workbook.write(fos);
-            }
-
-        } catch (IOException e) {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, selectedID);
+            stmt.executeUpdate();
+            loadFacultyData();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void handleViewProfile() {
+    private void handleViewProfile() { // Function that allows you to select and view the info of a faculty member
         String selectedFaculty = facultyListView.getSelectionModel().getSelectedItem();
         if (selectedFaculty == null) {
             showAlert(Alert.AlertType.WARNING, "Please select a faculty.");
             return;
         }
 
-        String selectedID = selectedFaculty.split(" - ")[0]; // Extract Faculty ID
-        Faculty faculty = facultyList.stream()
-                .filter(f -> f.id.equals(selectedID))
-                .findFirst().orElse(null);
+        String selectedID = selectedFaculty.split(" - ")[0];
+        String sql = "SELECT * FROM Faculties WHERE faculty_id = ?";
 
-        if (faculty != null) {
-            showAlert(Alert.AlertType.INFORMATION,
-                    "ID: " + faculty.id + "\nName: " + faculty.name + "\nEmail: " + faculty.email +
-                            "\nDegree: " + faculty.degree + "\nResearch: " + faculty.researchInterest);
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, selectedID);
+            ResultSet rs = stmt.executeQuery();
+            loadFacultyData();
+
+            if (rs.next()) { // Displaying the selected information of the faculty member
+                showAlert(Alert.AlertType.INFORMATION,
+                        "ID: " + rs.getString("faculty_id") +
+                                "\nName: " + rs.getString("name") +
+                                "\nEmail: " + rs.getString("email") +
+                                "\nDegree: " + rs.getString("degree") +
+                                "\nResearch Interest: " + rs.getString("research_interest"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -296,4 +287,5 @@ public class FacultyManagementController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }

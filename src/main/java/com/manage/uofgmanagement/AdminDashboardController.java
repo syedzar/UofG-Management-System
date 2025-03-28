@@ -27,8 +27,6 @@ public class AdminDashboardController {
 
     // Faculty Management Buttons
     @FXML private Button addFacultyButton;
-    @FXML private Button editFacultyButton;
-    @FXML private Button deleteFacultyButton;
 
     // Event Management Buttons
     @FXML private Button addEventButton;
@@ -106,18 +104,6 @@ public class AdminDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @FXML
-    private void handleEditFacultyAction() {
-        System.out.println("Edit Faculty button clicked!");
-        // TODO: Implement Edit Faculty functionality
-    }
-
-    @FXML
-    private void handleDeleteFacultyAction() {
-        System.out.println("Delete Faculty button clicked!");
-        // TODO: Implement Delete Faculty functionality
     }
 
     // Event Management Actions
