@@ -37,8 +37,18 @@ public class AdminDashboardController {
     @FXML
     private void handleAddStudentAction() {
         System.out.println("Add Student button clicked!");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/StudentManagmentAdmin.fxml"));
+                Parent root = loader.load();
+                Stage facultyStage = new Stage();
+                facultyStage.setScene(new Scene(root));
+                facultyStage.setTitle("Student Management");
+                facultyStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         // TODO: Open the "Add Student" form/window
-    }
 
     @FXML
     private void handleEditStudentAction() {
