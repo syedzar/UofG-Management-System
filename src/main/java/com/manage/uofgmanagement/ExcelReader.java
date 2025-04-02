@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class ExcelReader {
     private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx"; // File path to the excel data
-    private static final Map<String, String> users = new HashMap<>(); // Hashmap to store all users
-    private static final Map<String, String> roles = new HashMap<>(); // Hashmap to store all roles
+    private static final Map<String, String> users = new HashMap<>(); // HashMap to store all users
+    private static final Map<String, String> roles = new HashMap<>(); // HashMap to store all roles
 
     // Load user data from Excel
     public static void loadUserData() {
@@ -69,11 +69,31 @@ public class ExcelReader {
 
     // Method to read cell values as correct type
     public static String getCellValue(Cell cell) {
-        switch (cell.getCellType()) {
-            case STRING: return cell.getStringCellValue().trim(); // If cell is a string
-            case NUMERIC: return String.valueOf((int) cell.getNumericCellValue()); // If cell is numeric
-            case BOOLEAN: return String.valueOf(cell.getBooleanCellValue()); // If cell is a boolean
-            default: return "";
+        if (cell == null) {
+            return ""; // Handle null cells
+        }
+        CellType cellType = cell.getCellType();
+        switch (cellType) {
+            case STRING:
+                return cell.getStringCellValue().trim(); // If cell is a string
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf(cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue()); // If cell is a boolean
+            case BLANK:
+                return ""; // Handle blank cells
+            case FORMULA:
+                try {
+                    return String.valueOf(cell.getNumericCellValue());
+                } catch (IllegalStateException e) {
+                    return cell.getStringCellValue();
+                }
+            default:
+                return "";
         }
     }
 }

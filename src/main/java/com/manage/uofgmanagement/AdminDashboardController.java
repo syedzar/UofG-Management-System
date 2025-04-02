@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import java.io.IOException;
+import java.net.URL;
 
 public class AdminDashboardController {
 
@@ -24,6 +25,7 @@ public class AdminDashboardController {
     @FXML private Button addCourseButton;
     @FXML private Button editCourseButton;
     @FXML private Button deleteCourseButton;
+    @FXML private Button viewCoursesButton;
 
     // Faculty Management Buttons
     @FXML private Button addFacultyButton;
@@ -33,71 +35,93 @@ public class AdminDashboardController {
     @FXML private Button editEventButton;
     @FXML private Button deleteEventButton;
 
+    // Admin flag
+    private boolean isAdmin = true;
+
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+        System.out.println("Admin status set: " + isAdmin);
+    }
+
     // Student Management Actions
     @FXML
     private void handleAddStudentAction() {
         System.out.println("Add Student button clicked!");
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/StudentManagmentAdmin.fxml"));
-                Parent root = loader.load();
-                Stage facultyStage = new Stage();
-                facultyStage.setScene(new Scene(root));
-                facultyStage.setTitle("Student Management");
-                facultyStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/StudentManagmentAdmin.fxml"));
+            Parent root = loader.load();
+            Stage facultyStage = new Stage();
+            facultyStage.setScene(new Scene(root));
+            facultyStage.setTitle("Student Management");
+            facultyStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        // TODO: Open the "Add Student" form/window
-
+    }
     @FXML
-    private void handleEditStudentAction() {
-        System.out.println("Edit Student button clicked!");
-        // TODO: Open the "Edit Student" form/window
+    private void handleEditStudent() {
+        openWindow("/EditStudent.fxml", "Edit Student");
     }
 
     @FXML
-    private void handleDeleteStudentAction() {
+    private void handleDeleteStudent() {
         System.out.println("Delete Student button clicked!");
-        // TODO: Confirm and delete the selected student
     }
 
     // Subject Management Actions
     @FXML
-    private void handleAddSubjectAction() {
+    private void handleAddSubject() {
         System.out.println("Add Subject button clicked!");
-        // TODO: Open the "Add Subject" form/window
     }
 
     @FXML
-    private void handleEditSubjectAction() {
+    private void handleEditSubject() {
         System.out.println("Edit Subject button clicked!");
-        // TODO: Open the "Edit Subject" form/window
     }
 
     @FXML
-    private void handleDeleteSubjectAction() {
+    private void handleDeleteSubject() {
         System.out.println("Delete Subject button clicked!");
-        // TODO: Confirm and delete the selected subject
     }
 
     // Course Management Actions
     @FXML
     private void handleAddCourseAction() {
         System.out.println("Add Course button clicked!");
-        // TODO: Open the "Add Course" form/window
     }
 
     @FXML
     private void handleEditCourseAction() {
         System.out.println("Edit Course button clicked!");
-        // TODO: Open the "Edit Course" form/window
     }
 
     @FXML
     private void handleDeleteCourseAction() {
         System.out.println("Delete Course button clicked!");
-        // TODO: Confirm and delete the selected course
+    }
+
+    @FXML
+    private void handleViewCoursesAction() {
+        try {
+            URL fxmlLocation = getClass().getResource("/coursedashboard.fxml");
+            if (fxmlLocation == null) {
+                throw new IllegalStateException("FXML file not found at /coursedashboard.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Parent root = loader.load();
+            CourseDashboardController controller = loader.getController();
+            controller.setAdmin(isAdmin);
+
+            Stage courseStage = new Stage();
+            courseStage.setScene(new Scene(root));
+            courseStage.setTitle("Course Dashboard");
+            courseStage.show();
+
+            Stage currentStage = (Stage) viewCoursesButton.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException | IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     // Faculty Management Actions
@@ -115,30 +139,37 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
-
     // Event Management Actions
     @FXML
-    private void handleAddEventAction() {
+    private void handleAddEvent() {
         System.out.println("Add Event button clicked!");
-        // TODO: Open the "Add Event" form/window
     }
 
     @FXML
-    private void handleEditEventAction() {
+    private void handleEditEvent() {
         System.out.println("Edit Event button clicked!");
-        // TODO: Open the "Edit Event" form/window
     }
 
     @FXML
-    private void handleDeleteEventAction() {
+    private void handleDeleteEvent() {
         System.out.println("Delete Event button clicked!");
-        // TODO: Confirm and delete the selected event
     }
-
 
     @FXML
     public void initialize() {
         System.out.println("Admin Dashboard initialized.");
-        // TODO: Set up initial data, bind data to UI controls, etc.
+    }
+
+    private void openWindow(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle(title);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

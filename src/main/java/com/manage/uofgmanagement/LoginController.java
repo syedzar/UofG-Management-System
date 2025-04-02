@@ -13,9 +13,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 public class LoginController {
+
     @FXML
     private TextField usernameField; // Field to enter username/email
 
@@ -33,10 +35,31 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        // Loads the university logo from resources
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
-        universityLogo.setImage(image);
+        try {
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/university_logo.png")));
+            universityLogo.setImage(image);
+        } catch (NullPointerException e) {
+            System.out.println("Warning: University logo not found.");
+        }
+
+        // Check if the Login.fxml file is accessible
+        checkLoginFXML();
     }
+
+    // Method to check if the Login.fxml is accessible and debug the path
+    private void checkLoginFXML() {
+        // Print out the path that the class loader is using to find the FXML file
+        System.out.println("FXML path: " + getClass().getClassLoader().getResource("login.fxml"));  // Updated path
+
+        InputStream input = getClass().getClassLoader().getResourceAsStream("login.fxml");  // Updated path
+        if (input == null) {
+            System.out.println("Login.fxml file not found!");
+            errorLabel.setText("Login.fxml file not found! Please contact support.");
+        } else {
+            System.out.println("Login.fxml file loaded successfully!");
+        }
+    }
+
 
     @FXML
     private void handleLogin() {
@@ -47,7 +70,7 @@ public class LoginController {
         String role = ExcelReader.validateUser(username, password);
 
         if (role != null) {
-            errorLabel.setText("Login successful! Role: " + role);
+            System.out.println("Login successful! Role: " + role);
             navigateToDashboard(role);
         } else {
             errorLabel.setText("Invalid credentials. Please try again.");
@@ -55,43 +78,43 @@ public class LoginController {
     }
 
     private void navigateToDashboard(String role) {
-        if ("ADMIN".equals(role)) { // load the admin FXML here
-            System.out.println("Redirecting to Admin dashboard");
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdminDashboard.fxml"));
-                Parent root = loader.load();
+        String fxmlFile = null;
+        boolean isAdmin = false;
 
-                // Optionally, get the controller to pass any data:
-                AdminDashboardController controller = loader.getController();
-                // controller.initializeData(...);
-
-                Stage adminStage = new Stage();
-                adminStage.setScene(new Scene(root));
-                adminStage.setTitle("Admin Dashboard");
-                adminStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if ("USER".equals(role)) { // load the user FXML here
-            System.out.println("Redirecting to User dashboard");
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/UserDashboard.fxml"));
-                Parent root = loader.load();
-
-                // Optionally, get the controller to pass any data:
-                UserDashboardController controller = loader.getController();
-                // controller.initializeData(...);
-
-                Stage userStage = new Stage();
-                userStage.setScene(new Scene(root));
-                userStage.setTitle("User Dashboard");
-                userStage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            fxmlFile = "/AdminDashboard.fxml";
+            isAdmin = true;
+        } else if ("USER".equalsIgnoreCase(role)) {
+            fxmlFile = "/UserDashboard.fxml";
         }
-        // Close login window
-        Stage stage = (Stage) loginButton.getScene().getWindow();
-        stage.close();
+
+        if (fxmlFile != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                Parent root = loader.load();
+
+                // Get the controller and pass admin status
+                Object controller = loader.getController();
+                if (controller instanceof AdminDashboardController) {
+                    ((AdminDashboardController) controller).setAdmin(isAdmin);
+                } else if (controller instanceof UserDashboardController) {
+                    ((UserDashboardController) controller).setAdmin(isAdmin);
+                }
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle(isAdmin ? "Admin Dashboard" : "User Dashboard");
+                stage.show();
+
+                // Close login window
+                Stage currentStage = (Stage) loginButton.getScene().getWindow();
+                currentStage.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                errorLabel.setText("Error loading dashboard. Please contact support.");
+            }
+        } else {
+            errorLabel.setText("Error: Unknown user role.");
+        }
     }
 }

@@ -1,14 +1,12 @@
 package com.manage.uofgmanagement;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FacultyManagementController {
     @FXML private Button editFacultyButton;
