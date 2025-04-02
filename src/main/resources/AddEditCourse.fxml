@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="516.0" prefWidth="783.0" spacing="20" style="-fx-background-color: #f4f4f4; -fx-padding: 20px;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.AddEditCourseController">
+
+    <!-- Title Label -->
+    <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #003366; -fx-padding: 10px;" text="New Subject" />
+
+    <!-- Grid for form fields -->
+    <GridPane hgap="20" style="-fx-background-color: #ffffff; -fx-padding: 20px; -fx-border-radius: 10px; -fx-background-radius: 10px;" vgap="15">
+        <children>
+            <!-- Course Fields -->
+            <Label style="-fx-font-size: 14px;" text="Course Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="courseField" promptText="Course Name" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label style="-fx-font-size: 14px;" text="Location:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <TextField fx:id="locationField" promptText="Location" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+            <!-- Code Fields -->
+            <Label style="-fx-font-size: 14px;" text="Course Code:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="codeField" promptText="Course Code" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label style="-fx-font-size: 14px;" text="Capacity:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="capacityField" promptText="Capacity" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+            <!-- Section Fields -->
+            <Label style="-fx-font-size: 14px;" text="Section:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField fx:id="sectionField" promptText="Section" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+            <Label style="-fx-font-size: 14px;" text="Exam Date + Location:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="examField" promptText="Exam Date + Location" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+
+            <!-- Professor Fields -->
+            <Label style="-fx-font-size: 14px;" text="Professor:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextField fx:id="professorField" promptText="Professor" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+            <Label style="-fx-font-size: 14px;" text="Assign Faculty:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id="facultyField" promptText="Assign Faculty" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+
+            <!-- Lecture Time Fields -->
+            <Label style="-fx-font-size: 14px;" text="Lecture Time:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <TextField fx:id="lectureField" promptText="Lecture Time" style="-fx-pref-width: 200px; -fx-border-radius: 5px;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        </children>
+
+        <!-- Column Constraints -->
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" />
+            <ColumnConstraints halignment="CENTER" />
+            <ColumnConstraints halignment="RIGHT" />
+            <ColumnConstraints halignment="CENTER" />
+        </columnConstraints>
+
+        <!-- Row Constraints -->
+        <rowConstraints>
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+        </rowConstraints>
+    </GridPane>
+
+    <!-- Buttons -->
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="saveButton" onAction="#saveCourse" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 5px 12px; -fx-font-size: 12px; -fx-border-radius: 5px;" text="Save" />
+        <Button fx:id="cancelButton" onAction="#cancel" style="-fx-background-color: #FFC107; -fx-text-fill: white; -fx-padding: 5px 12px; -fx-font-size: 12px; -fx-border-radius: 5px;" text="Cancel" />
+    </HBox>
+
+</VBox>

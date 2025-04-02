@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" prefHeight="705.0" prefWidth="550.0" spacing="20" style="-fx-background-color: #f4f4f4; -fx-padding: 20px;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.EnrollmentManagementController">
+
+    <!-- Title -->
+    <HBox alignment="CENTER" style="-fx-background-color: #003366; -fx-padding: 20px; -fx-border-radius: 8px;">
+        <Label style="-fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold;" text="Enrollment Management" />
+    </HBox>
+
+    <!-- Course Selection -->
+    <HBox alignment="CENTER" spacing="15" style="-fx-padding: 10px;">
+        <Label style="-fx-font-size: 14px;" text="Select Course:" />
+        <ComboBox fx:id="courseDropdown" promptText="Choose a course" style="-fx-pref-width: 250px;" />
+    </HBox>
+
+    <!-- Enrolled Students Table -->
+    <VBox spacing="10">
+        <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Enrolled Students:" />
+        <TableView fx:id="enrollmentTable" prefHeight="200" style="-fx-background-color: white; -fx-border-radius: 8px; -fx-border-color: #ddd;">
+            <columns>
+                <TableColumn fx:id="studentNameColumn" minWidth="250" text="Student Name" />
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Waitlisted Students Table -->
+    <VBox spacing="10">
+        <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Waitlisted Students:" />
+        <TableView fx:id="waitlistTable" prefHeight="150" style="-fx-background-color: white; -fx-border-radius: 8px; -fx-border-color: #ddd;">
+            <columns>
+                <TableColumn fx:id="waitlistNameColumn" minWidth="250" text="Student Name" />
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- Buttons Section -->
+    <HBox alignment="CENTER" spacing="15" style="-fx-padding: 15px;">
+        <Button fx:id="enrollButton" onAction="#handleEnroll" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 10px; -fx-padding: 5px 10px; -fx-cursor: hand;" text="Enroll Student" />
+        <Button fx:id="assignFacultyButton" disable="true" onAction="#handleAssignFaculty" style="-fx-background-color: #007BFF; -fx-text-fill: white; -fx-font-size: 10px; -fx-padding: 5px 10px; -fx-cursor: hand;" text="Assign Faculty" />
+    </HBox>
+
+</VBox>

@@ -49,43 +49,45 @@
         <!-- Subject Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Subject Management:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
-            <Button fx:id="addSubjectButton" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Subject" />
-            <Button fx:id="editSubjectButton" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Subject" />
-            <Button fx:id="deleteSubjectButton" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Subject" />
+            <Button fx:id="addSubjectButton" onAction="#handleAddSubject" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Subject" />
+            <Button fx:id="editSubjectButton" onAction="#handleEditSubject" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Subject" />
+            <Button fx:id="deleteSubjectButton" onAction="#handleDeleteSubject" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Subject" />
         </HBox>
 
         <!-- Course Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Course Management:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <Button fx:id="addCourseButton" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Course" />
-            <Button fx:id="editCourseButton" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Course" />
-            <Button fx:id="deleteCourseButton" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Course" />
+            <!-- View Courses button -->
+            <Button fx:id="viewCoursesButton" onAction="#handleViewCoursesAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="View Courses" />
         </HBox>
 
         <!-- Faculty Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Faculty Management:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="3">
-            <Button fx:id="addFacultyButton" onAction="#handleAddFacultyAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Faculty" />
+            <Button fx:id="addFacultyButton" onAction="#handleAddFacultyAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Faculty" />
         </HBox>
 
         <!-- Event Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Event Management:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-            <Button fx:id="addEventButton" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Event" />
-            <Button fx:id="editEventButton" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Event" />
-            <Button fx:id="deleteEventButton" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Event" />
+            <Button fx:id="addEventButton" onAction="#handleAddEvent" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Event" />
+            <Button fx:id="editEventButton" onAction="#handleEditEvent" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Event" />
+            <Button fx:id="deleteEventButton" onAction="#handleDeleteEvent" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Event" />
         </HBox>
-      <rowConstraints>
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-         <RowConstraints />
-      </rowConstraints>
+
+        <!-- Define row constraints -->
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
     </GridPane>
 
     <!-- Footer -->
     <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
         <Label style="-fx-font-size: 12px;" text="© 2025 University Management System" />
     </HBox>
+
 </VBox>
