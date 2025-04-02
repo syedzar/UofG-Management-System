@@ -117,8 +117,8 @@ public class AdminDashboardController {
             courseStage.setTitle("Course Dashboard");
             courseStage.show();
 
-            Stage currentStage = (Stage) viewCoursesButton.getScene().getWindow();
-            currentStage.close();
+            // Removed the line that closes the current window
+
         } catch (IOException | IllegalStateException e) {
             e.printStackTrace();
         }
