@@ -1,7 +1,5 @@
 package com.manage.uofgmanagement;
 
-import com.manage.uofgmanagement.CourseEnrollment;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,107 +8,132 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import static com.manage.uofgmanagement.ExcelReader.getCellValue;
 
+
+/**
+ * Controller class for managing the Course Dashboard.
+ * This class handles displaying, adding, editing, and deleting courses,
+ * as well as handling enrollments for students and admins.
+ */
+
 public class CourseDashboardController {
 
     @FXML
-    private Button backButton;
-
+    private Button enrollStudentButton, enrollAdminButton, addButton, editButton, deleteButton;
     @FXML
-    private Button enrollButton;
-
+    private ButtonBar buttonBar;  // Holds admin-related buttons.
     @FXML
-    private Button addButton;
+    private TableView<CourseEnrollment> courseTable; // Table to display courses
 
+    // Columns for the courseTable, each mapping to a property in CourseEnrollment.
     @FXML
-    private Button editButton;
-
+    private TableColumn<CourseEnrollment, String> courseCodeColumn, courseNameColumn, subjectCodeColumn, sectionNumberColumn, lectureTimeColumn, finalDateColumn, locationColumn, teacherNameColumn;
     @FXML
-    private Button deleteButton;
-
+    private TableColumn<CourseEnrollment, Integer> capacityColumn; // Capacity column (integer type).
     @FXML
-    private ButtonBar buttonBar;
+    private Label title; // Label to display the title of the dashboard.
 
-    @FXML
-    private TableView<CourseEnrollment> courseTable;
+    private boolean isAdmin = false; // Tracks whether the current user is an admin.
 
-    @FXML
-    private TableColumn<CourseEnrollment, String> courseCodeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> courseNameColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> subjectCodeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> sectionNumberColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, Integer> capacityColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> lectureTimeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> finalDateColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> locationColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> teacherNameColumn;
-
-    @FXML
-    private Label title;
-
-    private boolean isAdmin = false;
-
+    /**
+     * Sets whether the user is an admin and updates UI accordingly.
+     * @param isAdmin true if user is an admin, false otherwise.
+     */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
-        checkAdminAccess();
+        checkAdminAccess(); // Enable/disable admin buttons based on role.
     }
 
+
+    /**
+     * Handles student enrollment button click.
+     * Loads the appropriate Enrollment Management UI based on user role.
+     */
     @FXML
-    void enrollButtonPressed(ActionEvent event) {
+    void enrollStudentButtonPressed(ActionEvent event) {
         CourseEnrollment selectedCourse = courseTable.getSelectionModel().getSelectedItem();
         if (selectedCourse != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnrollmentManagement.fxml"));
+                // Choose the appropriate FXML file based on whether the user is an admin.
+                String resourcePath = isAdmin ? "/EnrollmentManagementAdmin.fxml" : "/EnrollmentManagementUser.fxml";
+
+                // Load the FXML file
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
                 Parent root = loader.load();
 
-                EnrollmentManagementController controller = loader.getController();
-                controller.setSelectedCourse(selectedCourse);
+                // Pass the selected course to the corresponding controller
+                if (isAdmin) {
+                    EnrollmentManagementControllerAdmin controller = loader.getController();
+                    controller.setSelectedCourse(selectedCourse);
+                } else {
+                    EnrollmentManagementControllerUser controller = loader.getController();
+                    controller.setSelectedCourse(selectedCourse);
+                }
 
+                // Create and show the enrollment management window
                 Stage enrollStage = new Stage();
                 enrollStage.setScene(new Scene(root));
                 enrollStage.setTitle("Enrollment Management");
                 enrollStage.show();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Error loading Enrollment Management FXML: " + e.getMessage());
             }
         } else {
             System.out.println("No course selected for enrollment.");
         }
     }
 
+
+    /**
+     * Handles admin enrollment button click.
+     * Opens the admin-specific Enrollment Management UI.
+     */
     @FXML
-    void addButtonPressed(ActionEvent event) {
-        openAddEditWindow(null);
+    void enrollAdminButtonPressed(ActionEvent event) {
+        loadAdminEnrollmentDashboard(event);
     }
 
+    /**
+     * Loads the Admin Enrollment Dashboard.
+     */
+    private void loadAdminEnrollmentDashboard(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnrollmentManagementAdmin.fxml"));
+            Parent root = loader.load();
+
+            Stage adminStage = new Stage();
+            adminStage.setScene(new Scene(root));
+            adminStage.setTitle("Admin Enrollment Management");
+            adminStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading EnrollmentManagementAdmin.fxml");
+        }
+    }
+
+    /**
+     * Handles the 'Add Course' button click.
+     * Opens the Add/Edit Course window in 'Add' mode.
+     */
+    @FXML
+    void addButtonPressed(ActionEvent event) {
+        openAddEditWindow(null); // Passing null means we're adding a new course.
+    }
+
+    /**
+     * Handles the 'Edit Course' button click.
+     * Opens the Add/Edit Course window in 'Edit' mode with selected course data.
+     */
     @FXML
     void editButtonPressed(ActionEvent event) {
         CourseEnrollment selectedCourse = courseTable.getSelectionModel().getSelectedItem();
@@ -119,6 +142,10 @@ public class CourseDashboardController {
         }
     }
 
+    /**
+     * Handles the 'Delete Course' button click.
+     * Removes the selected course from the table.
+     */
     @FXML
     void deleteButtonPressed(ActionEvent event) {
         CourseEnrollment selectedCourse = courseTable.getSelectionModel().getSelectedItem();
@@ -127,6 +154,10 @@ public class CourseDashboardController {
         }
     }
 
+    /**
+     * Opens the Add/Edit Course window.
+     * @param course If null, opens in 'Add' mode; otherwise, opens in 'Edit' mode with course details.
+     */
     private void openAddEditWindow(CourseEnrollment course) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AddEditCourse.fxml"));
@@ -147,8 +178,13 @@ public class CourseDashboardController {
         }
     }
 
+    /**
+     * Initializes the Course Dashboard.
+     * This method is automatically called when the FXML file is loaded.
+     */
     @FXML
     void initialize() {
+        // Bind table columns to CourseEnrollment properties.
         courseCodeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         subjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
@@ -159,16 +195,23 @@ public class CourseDashboardController {
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
         teacherNameColumn.setCellValueFactory(new PropertyValueFactory<>("teacherName"));
 
-        loadDataFromExcel();
-        checkAdminAccess();
+        loadDataFromExcel(); // Load course data from an Excel file.
+        checkAdminAccess();  // Adjust UI based on admin privileges.
     }
 
+    /**
+     * Enables/disables admin-only buttons based on user role.
+     */
     private void checkAdminAccess() {
         addButton.setDisable(!isAdmin);
         editButton.setDisable(!isAdmin);
         deleteButton.setDisable(!isAdmin);
+        enrollAdminButton.setDisable(!isAdmin);
     }
 
+    /**
+     * Loads course data from an Excel file and populates the table.
+     */
     private void loadDataFromExcel() {
         ObservableList<CourseEnrollment> data = FXCollections.observableArrayList();
         try (FileInputStream file = new FileInputStream(new File("src/main/resources/UMS_Data.xlsx"));
@@ -178,8 +221,9 @@ public class CourseDashboardController {
             if (coursesSheet != null) {
                 int idCounter = 1;
                 for (Row row : coursesSheet) {
-                    if (row.getRowNum() == 0) continue;
+                    if (row.getRowNum() == 0) continue; // Skip header row
 
+                    // Read cell values safely
                     String courseCode = getCellValue(row.getCell(0));
                     String courseName = getCellValue(row.getCell(1));
                     String subjectCode = getCellValue(row.getCell(2));
