@@ -11,8 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.sql.*;
 
 import java.net.URL;
+import java.sql.SQLException;
 
 public class StudentManagmentController {
 
@@ -33,6 +35,36 @@ public class StudentManagmentController {
 
     // Initialize ObservableList to hold student data
     private ObservableList<Student> studentList = FXCollections.observableArrayList();
+
+    private Connection connect() {
+        try {
+            return DriverManager.getConnection("jdbc:sqlite:students.db");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void createStudentsTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS students ("
+                + "student_id TEXT PRIMARY KEY, "
+                + "name TEXT NOT NULL, "
+                + "address TEXT, "
+                + "phone TEXT, "
+                + "email TEXT UNIQUE NOT NULL, "
+                + "password TEXT NOT NULL, "
+                + "tuition_fee REAL DEFAULT 0,"
+                + "profile_picture_path TEXT" // ADDED THIS LINE
+                + ");";
+
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Students table created (if not exists).");
+        } catch (SQLException e) {
+            System.out.println("Error creating students table: " + e.getMessage());
+        }
+    }
 
     // Student class to represent student data
     public static class Student {
@@ -201,10 +233,9 @@ public class StudentManagmentController {
         }
     }
 
-
-
     @FXML
     private void initialize() {
+        createStudentsTable();
         // Bind columns to the respective fields of the Student class
         studentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentName()));
         studentIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
@@ -219,33 +250,20 @@ public class StudentManagmentController {
 
     @FXML
     private void handleAddStudent() {
-        // Create a dialog to add a new student
         Stage addStudentStage = new Stage();
         VBox vBox = new VBox(10);
+        vBox.setStyle("-fx-padding: 10;");
 
-        // Create labels and text fields for the new student attributes
-        Label nameLabel = new Label(" Name:");
+        // Input fields for student details
         TextField nameField = new TextField();
-
-        Label idLabel = new Label(" Student ID:");
         TextField idField = new TextField();
-
-        Label addressLabel = new Label(" Address:");
         TextField addressField = new TextField();
-
-        Label phoneLabel = new Label(" Phone:");
         TextField phoneField = new TextField();
-
-        Label passwordLabel = new Label(" Password:");
-        TextField passwordField = new TextField();
-
-        Label emailLabel = new Label(" Email:");
+        PasswordField passwordField = new PasswordField();
         TextField emailField = new TextField();
+        TextField tuitionFeeField = new TextField();
 
-        // Create the submit button
-        Button submitButton = new Button(" Add Student");
-
-        // Handle form submission
+        Button submitButton = new Button("Add Student");
         submitButton.setOnAction(event -> {
             String name = nameField.getText();
             String studentId = idField.getText();
@@ -253,89 +271,118 @@ public class StudentManagmentController {
             String phone = phoneField.getText();
             String password = passwordField.getText();
             String email = emailField.getText();
+            String tuitionFee = tuitionFeeField.getText();
 
-            if (name.isEmpty() || studentId.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty()) {
+            // Validate input fields
+            if (name.isEmpty() || studentId.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty() || tuitionFee.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "All fields are required!");
             } else {
-                // Create a new Student object and add it to the ObservableList
-                Student newStudent = new Student(name, studentId, address, phone, password, email, "0.0");
-                studentList.add(newStudent);  // Add new student to the ObservableList
+                try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(
+                        "INSERT INTO students (student_id, name, address, phone, password, email, tuition_fee, profile_picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    pstmt.setString(1, studentId);
+                    pstmt.setString(2, name);
+                    pstmt.setString(3, address);
+                    pstmt.setString(4, phone);
+                    pstmt.setString(5, password);
+                    pstmt.setString(6, email);
+                    pstmt.setString(7, tuitionFee);
+                    pstmt.setString(8, "resources/Default_pfp.svg.png"); // Default profile picture path
+                    pstmt.executeUpdate();
 
-                // Close the dialog
-                addStudentStage.close();
+                    // Add the new student to the ObservableList
+                    Student newStudent = new Student(name, studentId, address, phone, password, email, tuitionFee);
+                    studentList.add(newStudent);
+
+                    // Close the add student stage and refresh the table
+                    addStudentStage.close();
+                    studentTable.refresh();
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage());
+                }
             }
         });
 
-        // Set up the VBox and add all fields to the form
-        vBox.getChildren().addAll(nameLabel, nameField, idLabel, idField, addressLabel, addressField, phoneLabel, phoneField,
-                passwordLabel, passwordField, emailLabel, emailField, submitButton);
+        vBox.getChildren().addAll(new Label("Name:"), nameField,
+                new Label("Student ID:"), idField,
+                new Label("Address:"), addressField,
+                new Label("Phone:"), phoneField,
+                new Label("Password:"), passwordField,
+                new Label("Email:"), emailField,
+                new Label("Tuition Fee:"), tuitionFeeField,
+                submitButton);
 
-        // Set up the scene for the dialog
-        Scene scene = new Scene(vBox, 400, 500);
-        addStudentStage.setScene(scene);
+        addStudentStage.setScene(new Scene(vBox, 400, 500));
         addStudentStage.show();
     }
 
     @FXML
     private void handleEditStudent() {
-        // Get the selected student from the TableView
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-
-        // Check if a student is selected
         if (selectedStudent != null) {
-            // Create a dialog to edit the selected student's details
             Stage editStudentStage = new Stage();
             VBox vBox = new VBox(10);
 
-            // Pre-fill the fields with the selected student's current details
+            // Pre-fill fields with existing data
             TextField nameField = new TextField(selectedStudent.getStudentName());
             TextField idField = new TextField(selectedStudent.getStudentId());
+            idField.setDisable(true); // Disable editing of student ID
             TextField addressField = new TextField(selectedStudent.getAddress());
             TextField phoneField = new TextField(selectedStudent.getPhone());
-            TextField passwordField = new TextField(selectedStudent.getPassword());
+            PasswordField passwordField = new PasswordField();
+            passwordField.setText(selectedStudent.getPassword());
             TextField emailField = new TextField(selectedStudent.getEmail());
+            TextField tuitionFeeField = new TextField(selectedStudent.getTuitionFee());
 
-            // Create the submit button for updating
             Button submitButton = new Button("Update Student");
-
-            // Handle form submission
             submitButton.setOnAction(event -> {
                 String name = nameField.getText();
-                String studentId = idField.getText();
                 String address = addressField.getText();
                 String phone = phoneField.getText();
                 String password = passwordField.getText();
                 String email = emailField.getText();
+                String tuitionFee = tuitionFeeField.getText();
 
-                // Ensure that no fields are empty before submitting
-                if (name.isEmpty() || studentId.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty()) {
+                if (name.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty() || tuitionFee.isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, "All fields are required!");
                 } else {
-                    // Update the selected student's details
-                    selectedStudent.setStudentName(name);
-                    selectedStudent.setStudentId(studentId);
-                    selectedStudent.setAddress(address);
-                    selectedStudent.setPhone(phone);
-                    selectedStudent.setPassword(password);
-                    selectedStudent.setEmail(email);
+                    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(
+                            "UPDATE students SET name=?, address=?, phone=?, password=?, email=?, tuition_fee=? WHERE student_id=?")) {
+                        pstmt.setString(1, name);
+                        pstmt.setString(2, address);
+                        pstmt.setString(3, phone);
+                        pstmt.setString(4, password);
+                        pstmt.setString(5, email);
+                        pstmt.setString(6, tuitionFee);
+                        pstmt.setString(7, selectedStudent.getStudentId());
+                        pstmt.executeUpdate();
 
-                    // Close the dialog
-                    editStudentStage.close();
+                        // Update the selected student's properties
+                        selectedStudent.setStudentName(name);
+                        selectedStudent.setAddress(address);
+                        selectedStudent.setPhone(phone);
+                        selectedStudent.setPassword(password);
+                        selectedStudent.setEmail(email);
+                        selectedStudent.setTuitionFee(tuitionFee);
 
-                    // Refresh the TableView to reflect the updated data
-                    studentTable.refresh();
+                        editStudentStage.close();
+                        studentTable.refresh();
+                    } catch (SQLException e) {
+                        showAlert(Alert.AlertType.ERROR, "Error updating student: " + e.getMessage());
+                    }
                 }
             });
 
-            // Set up the VBox and add all fields to the form
-            vBox.getChildren().addAll(new Label("Name:"), nameField, new Label("Student ID:"), idField,
-                    new Label("Address:"), addressField, new Label("Phone:"), phoneField,
-                    new Label("Password:"), passwordField, new Label("Email:"), emailField, submitButton);
+            vBox.getChildren().addAll(new Label("Name:"), nameField,
+                    new Label("Address:"), addressField,
+                    new Label("Phone:"), phoneField,
+                    new Label("Password:"), passwordField,
+                    new Label("Email:"), emailField,
+                    new Label("Tuition Fee:"), tuitionFeeField,
+                    submitButton);
 
-            // Set up the scene for the dialog
-            Scene scene = new Scene(vBox, 400, 500);
-            editStudentStage.setScene(scene);
+            editStudentStage.setScene(new Scene(vBox, 400, 500));
             editStudentStage.show();
+
         } else {
             showAlert(Alert.AlertType.ERROR, "Please select a student to edit.");
         }
@@ -343,29 +390,25 @@ public class StudentManagmentController {
 
     @FXML
     private void handleDeleteStudent() {
-        // Get the selected student from the TableView
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-
-        // Check if a student is selected
         if (selectedStudent != null) {
-            // Create a confirmation dialog
             Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationAlert.setTitle("Delete Student");
-            confirmationAlert.setHeaderText(null);
             confirmationAlert.setContentText("Are you sure you want to delete this student?");
-
-            // Show the dialog and wait for the user's response
             confirmationAlert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    // If the user confirms, delete the student from the ObservableList
+                    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(
+                            "DELETE FROM students WHERE student_id=?")) {
+                        pstmt.setString(1, selectedStudent.getStudentId());
+                        pstmt.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     studentList.remove(selectedStudent);
-
-                    // Optionally, show a success message
                     showAlert(Alert.AlertType.INFORMATION, "Student deleted successfully.");
                 }
             });
         } else {
-            // If no student is selected, show an error message
             showAlert(Alert.AlertType.ERROR, "Please select a student to delete.");
         }
     }
@@ -422,49 +465,35 @@ public class StudentManagmentController {
 
     @FXML
     private void handleViewStudentProfile() {
-        // Get the selected student from the TableView
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-
         if (selectedStudent != null) {
-            // Create a dialog to show the student's profile
             Stage profileStage = new Stage();
             VBox profileVBox = new VBox(10);
             profileVBox.setStyle("-fx-padding: 10;");
 
-            // Create labels to show student information
             Label nameLabel = new Label("Name: " + selectedStudent.getStudentName());
             Label idLabel = new Label("Student ID: " + selectedStudent.getStudentId());
             Label addressLabel = new Label("Address: " + selectedStudent.getAddress());
             Label phoneLabel = new Label("Phone: " + selectedStudent.getPhone());
-            Label passwordLabel = new Label("Password: " + selectedStudent.getPassword());
             Label emailLabel = new Label("Email: " + selectedStudent.getEmail());
 
-            // Default profile picture (replace with your default image file path if needed)
-            // Ensure the image is inside the 'resources/images' folder and adjust the path accordingly
-            String profilePicPath = "/Default_pfp.svg.png"; // Path relative to the resources folder
+            String profilePicPath = "/Default_pfp.svg.png";
             URL imageUrl = getClass().getResource(profilePicPath);
-
             if (imageUrl != null) {
-                Image profileImage = new Image(imageUrl.toString());  // Load the image from the resources folder
-                ImageView profileImageView = new ImageView(profileImage);  // Create an ImageView for displaying the image
-                profileImageView.setFitHeight(100);  // Set image size
+                ImageView profileImageView = new ImageView(new Image(imageUrl.toString()));
+                profileImageView.setFitHeight(100);
                 profileImageView.setFitWidth(100);
-
-                // Add the student's information and profile picture to the VBox
-                profileVBox.getChildren().addAll(nameLabel, idLabel, addressLabel, phoneLabel, passwordLabel, emailLabel, profileImageView);
-            } else {
-                System.out.println("Error: Profile picture not found.");
+                profileVBox.getChildren().add(profileImageView);
             }
 
-            // Create and show the scene
-            Scene profileScene = new Scene(profileVBox, 300, 400);
-            profileStage.setScene(profileScene);
-            profileStage.setTitle("Student Profile");
+            profileVBox.getChildren().addAll(nameLabel, idLabel, addressLabel, phoneLabel, emailLabel);
+            profileStage.setScene(new Scene(profileVBox, 300, 400));
             profileStage.show();
         } else {
             showAlert(Alert.AlertType.ERROR, "Please select a student to view.");
         }
     }
+
 
     private void refreshEnrollments(Student student) {
         // This method will update the table of students with the new enrollments
@@ -540,8 +569,6 @@ public class StudentManagmentController {
             showAlert(Alert.AlertType.ERROR, "Please select a student to enroll.");
         }
     }
-
-
 
     @FXML
     private void handleAcademicProgressTracking() {
