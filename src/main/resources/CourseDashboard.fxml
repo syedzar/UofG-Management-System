@@ -3,24 +3,40 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="560.0" maxWidth="792.0" minHeight="500.0" minWidth="750.0" prefHeight="560.0" prefWidth="792.0" style="-fx-padding: 10px;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.CourseDashboardController">
+<VBox maxHeight="560.0" maxWidth="792.0" minHeight="500.0" minWidth="750.0" prefHeight="560.0" prefWidth="792.0" style="-fx-padding: 10px;"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.manage.uofgmanagement.CourseDashboardController">
 
    <children>
       <!-- Title Bar -->
-      <HBox fx:id="titleBox" maxHeight="50.0" prefHeight="50.0" prefWidth="750.0" style="-fx-background-color: #003366; -fx-padding: 10px;">
+      <HBox fx:id="titleBox" maxHeight="50.0" prefHeight="50.0" prefWidth="750.0"
+            style="-fx-background-color: #003366; -fx-padding: 10px;">
          <children>
-            <Label fx:id="title" alignment="TOP_LEFT" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="Course View" />
+            <Label fx:id="title" alignment="TOP_LEFT"
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+                   text="Course View" />
             <!-- Buttons on the top right -->
             <HBox alignment="CENTER_RIGHT" spacing="10" HBox.hgrow="ALWAYS">
-               <Button fx:id="enrollButton" onAction="#enrollButtonPressed" style="-fx-background-color: #673AB7; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;" text="Enroll" />
+               <!-- Enroll Student Button (fixed ID) -->
+               <Button fx:id="enrollStudentButton" onAction="#enrollStudentButtonPressed"
+                       style="-fx-background-color: #673AB7; -fx-text-fill: white; -fx-font-size: 12px;
+                              -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;"
+                       text="Enroll Student" />
+               <!-- Enroll Admin Button -->
+               <Button fx:id="enrollAdminButton" onAction="#enrollAdminButtonPressed"
+                       style="-fx-background-color: #FF9800; -fx-text-fill: white; -fx-font-size: 12px;
+                              -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;"
+                       text="Enroll Admin" />
             </HBox>
          </children>
       </HBox>
 
       <!-- Table View -->
-      <TableView fx:id="courseTable" maxHeight="490.0" maxWidth="775.0" minHeight="400.0" minWidth="750.0" prefHeight="490.0" prefWidth="771.0" style="-fx-background-color: #fff; -fx-border-color: #ddd; -fx-border-width: 1px;">
+      <TableView fx:id="courseTable" maxHeight="490.0" maxWidth="775.0" minHeight="400.0" minWidth="750.0"
+                 prefHeight="490.0" prefWidth="771.0"
+                 style="-fx-background-color: #fff; -fx-border-color: #ddd; -fx-border-width: 1px;">
          <columns>
-            <TableColumn fx:id="courseCodeColumn" text="#" />
+            <TableColumn fx:id="courseCodeColumn" text="Course Code" />
             <TableColumn fx:id="courseNameColumn" text="Course Name" />
             <TableColumn fx:id="subjectCodeColumn" text="Subject Code" />
             <TableColumn fx:id="sectionNumberColumn" text="Section Number" />
@@ -35,9 +51,18 @@
       <!-- Button Section for Add, Edit, and Delete -->
       <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10px;">
          <children>
-            <Button fx:id="addButton" disable="true" onAction="#addButtonPressed" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;" text="Add" />
-            <Button fx:id="editButton" disable="true" onAction="#editButtonPressed" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;" text="Edit" />
-            <Button fx:id="deleteButton" disable="true" onAction="#deleteButtonPressed" style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;" text="Delete" />
+            <Button fx:id="addButton" disable="true" onAction="#addButtonPressed"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px;
+                           -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;"
+                    text="Add" />
+            <Button fx:id="editButton" disable="true" onAction="#editButtonPressed"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-size: 12px;
+                           -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;"
+                    text="Edit" />
+            <Button fx:id="deleteButton" disable="true" onAction="#deleteButtonPressed"
+                    style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-size: 12px;
+                           -fx-padding: 5px 10px; -fx-border-radius: 5px; -fx-font-weight: bold; -fx-cursor: hand;"
+                    text="Delete" />
          </children>
       </HBox>
 

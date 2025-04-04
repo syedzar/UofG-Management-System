@@ -1,7 +1,5 @@
 package com.manage.uofgmanagement;
 
-import com.manage.uofgmanagement.CourseEnrollment;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,13 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.*;
@@ -26,53 +21,15 @@ import static com.manage.uofgmanagement.ExcelReader.getCellValue;
 public class CourseDashboardController {
 
     @FXML
-    private Button backButton;
-
-    @FXML
-    private Button enrollButton;
-
-    @FXML
-    private Button addButton;
-
-    @FXML
-    private Button editButton;
-
-    @FXML
-    private Button deleteButton;
-
+    private Button enrollStudentButton, enrollAdminButton, addButton, editButton, deleteButton;
     @FXML
     private ButtonBar buttonBar;
-
     @FXML
     private TableView<CourseEnrollment> courseTable;
-
     @FXML
-    private TableColumn<CourseEnrollment, String> courseCodeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> courseNameColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> subjectCodeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> sectionNumberColumn;
-
+    private TableColumn<CourseEnrollment, String> courseCodeColumn, courseNameColumn, subjectCodeColumn, sectionNumberColumn, lectureTimeColumn, finalDateColumn, locationColumn, teacherNameColumn;
     @FXML
     private TableColumn<CourseEnrollment, Integer> capacityColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> lectureTimeColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> finalDateColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> locationColumn;
-
-    @FXML
-    private TableColumn<CourseEnrollment, String> teacherNameColumn;
-
     @FXML
     private Label title;
 
@@ -84,15 +41,22 @@ public class CourseDashboardController {
     }
 
     @FXML
-    void enrollButtonPressed(ActionEvent event) {
+    void enrollStudentButtonPressed(ActionEvent event) {
         CourseEnrollment selectedCourse = courseTable.getSelectionModel().getSelectedItem();
         if (selectedCourse != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnrollmentManagement.fxml"));
+                String resourcePath = isAdmin ? "/EnrollmentManagementAdmin.fxml" : "/EnrollmentManagementUser.fxml";
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
                 Parent root = loader.load();
 
-                EnrollmentManagementController controller = loader.getController();
-                controller.setSelectedCourse(selectedCourse);
+                if (isAdmin) {
+                    EnrollmentManagementControllerAdmin controller = loader.getController();
+                    controller.setSelectedCourse(selectedCourse);
+                } else {
+                    EnrollmentManagementControllerUser controller = loader.getController();
+                    controller.setSelectedCourse(selectedCourse);
+                }
 
                 Stage enrollStage = new Stage();
                 enrollStage.setScene(new Scene(root));
@@ -100,9 +64,30 @@ public class CourseDashboardController {
                 enrollStage.show();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Error loading Enrollment Management FXML: " + e.getMessage());
             }
         } else {
             System.out.println("No course selected for enrollment.");
+        }
+    }
+
+    @FXML
+    void enrollAdminButtonPressed(ActionEvent event) {
+        loadAdminEnrollmentDashboard(event);
+    }
+
+    private void loadAdminEnrollmentDashboard(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EnrollmentManagementAdmin.fxml"));
+            Parent root = loader.load();
+
+            Stage adminStage = new Stage();
+            adminStage.setScene(new Scene(root));
+            adminStage.setTitle("Admin Enrollment Management");
+            adminStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading EnrollmentManagementAdmin.fxml");
         }
     }
 
@@ -167,6 +152,7 @@ public class CourseDashboardController {
         addButton.setDisable(!isAdmin);
         editButton.setDisable(!isAdmin);
         deleteButton.setDisable(!isAdmin);
+        enrollAdminButton.setDisable(!isAdmin);
     }
 
     private void loadDataFromExcel() {
