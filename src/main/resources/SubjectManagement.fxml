@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.SubjectManagementController">
+    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#0065c4" height="53.0" stroke="BLACK" strokeType="INSIDE" width="763.0" />
+    <Text fill="WHITE" layoutX="325.0" layoutY="31.0" scaleX="1.5" scaleY="1.5" scaleZ="1.5" smooth="false" strokeType="OUTSIDE" strokeWidth="0.0" text="Subject Management" />
+
+    <!-- TableView with fx:id -->
+    <TableView fx:id="subjectTable" layoutX="72.0" layoutY="53.0" prefHeight="413.0" prefWidth="604.0" AnchorPane.bottomAnchor="134.0" AnchorPane.leftAnchor="72.0" AnchorPane.rightAnchor="87.0" AnchorPane.topAnchor="53.0">
+        <columns>
+            <TableColumn fx:id="subjectNameColumn" prefWidth="100.0" text="Subject Name" />
+            <TableColumn fx:id="subjectCodeColumn" prefWidth="100.0" text="Subject Code" />
+            <TableColumn fx:id="departmentColumn" prefWidth="100.0" text="Department" />
+            <TableColumn fx:id="creditsColumn" prefWidth="100.0" text="Credits" />
+            <TableColumn fx:id="semesterColumn" prefWidth="100.0" text="Semester" />
+            <TableColumn fx:id="instructorColumn" prefWidth="100.0" text="Instructor" />
+        </columns>
+    </TableView>
+
+    <HBox layoutX="81.0" layoutY="468.0" prefHeight="128.0" prefWidth="647.0" spacing="10">
+        <Button mnemonicParsing="false" onAction="#handleAddSubject" prefHeight="26.0" prefWidth="105.0" text="Add Subject" />
+        <Button mnemonicParsing="false" onAction="#handleEditSubject" prefHeight="26.0" prefWidth="104.0" text="Edit Subject" />
+        <Button mnemonicParsing="false" onAction="#handleDeleteSubject" prefHeight="26.0" prefWidth="104.0" text="Delete Subject" />
+        <Button mnemonicParsing="false" onAction="#handleViewSubjectDetails" prefHeight="26.0" prefWidth="140.0" text="View Subject Details" />
+        <Button mnemonicParsing="false" onAction="#handleManageCurriculum" prefHeight="26.0" prefWidth="130.0" text="Manage Curriculum" />
+    </HBox>
+
+    <HBox layoutX="213.0" layoutY="497.0" prefHeight="78.0" prefWidth="304.0" spacing="10">
+        <Button mnemonicParsing="false" onAction="#handleAssignFaculty" prefHeight="26.0" prefWidth="182.0" text="Assign Faculty" />
+        <Button mnemonicParsing="false" onAction="#handleSubjectReports" prefHeight="26.0" prefWidth="156.0" text="Subject Reports" />
+    </HBox>
+</AnchorPane>
