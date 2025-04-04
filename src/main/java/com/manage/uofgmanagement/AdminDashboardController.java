@@ -28,9 +28,13 @@ public class AdminDashboardController {
     @FXML private Button addFacultyButton;
 
     // Event Management Buttons
-    @FXML private Button addEventButton;
-    @FXML private Button editEventButton;
-    @FXML private Button deleteEventButton;
+    // Note: For consolidated event management, we now use handleManageEvents(), not the individual add/edit/delete buttons.
+    // If you no longer need addEventButton, editEventButton, deleteEventButton, they should be removed from your FXML and code.
+    // Otherwise, you can leave them if they're still used.
+    // For this example, we assume they're no longer needed.
+    // @FXML private Button addEventButton;
+    // @FXML private Button editEventButton;
+    // @FXML private Button deleteEventButton;
 
     // Admin flag
     private boolean isAdmin = true;
@@ -111,7 +115,7 @@ public class AdminDashboardController {
         }
     }
 
-    // Faculty Management Actions
+    // Faculty Management Action
     @FXML
     private void handleAddFacultyAction() {
         System.out.println("Add Faculty button clicked!");
@@ -127,27 +131,30 @@ public class AdminDashboardController {
         }
     }
 
-    // Event Management Actions
+    // Consolidated Event Management Action
     @FXML
-    private void handleAddEvent() {
-        System.out.println("Add Event button clicked!");
+    private void handleManageEvents() {
+        System.out.println("Manage Events button clicked!");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EventManagement.fxml"));
+            Parent root = loader.load();
+            Stage eventStage = new Stage();
+            eventStage.setScene(new Scene(root));
+            eventStage.setTitle("Event Management");
+            eventStage.show();
+            eventStage.toFront();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    @FXML
-    private void handleEditEvent() {
-        System.out.println("Edit Event button clicked!");
-    }
-
-    @FXML
-    private void handleDeleteEvent() {
-        System.out.println("Delete Event button clicked!");
-    }
-
+    // Initialize method should be inside the class body.
     @FXML
     public void initialize() {
         System.out.println("Admin Dashboard initialized.");
     }
 
+    // Helper method to open a window (optional, not used in the code above)
     private void openWindow(String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -160,4 +167,26 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            // Get the current stage (admin dashboard window) and close it
+            Stage currentStage = (Stage) addStudentButton.getScene().getWindow();
+            currentStage.close();
+
+            // Load the login FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Parent root = loader.load();
+
+            // Create a new stage (login window) and show it
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(root));
+            loginStage.setTitle("Login");
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

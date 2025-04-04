@@ -3,7 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="center" spacing="20" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.AdminDashboardController">
+<VBox alignment="center" spacing="20" style="-fx-background-color: #f4f4f4;"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.manage.uofgmanagement.AdminDashboardController">
 
     <!-- Header -->
     <HBox alignment="center" style="-fx-background-color: #003366; -fx-padding: 15px;">
@@ -41,7 +43,7 @@
         </columnConstraints>
 
         <!-- Student Management -->
-        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;"  text="Student Management:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Student Management:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <Button fx:id="addStudentButton" onAction="#handleAddStudentAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Student Management" />
         </HBox>
@@ -55,7 +57,6 @@
         <!-- Course Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Course Management:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
-            <!-- View Courses button -->
             <Button fx:id="viewCoursesButton" onAction="#handleViewCoursesAction" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="View Courses" />
         </HBox>
 
@@ -68,9 +69,7 @@
         <!-- Event Management -->
         <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" text="Event Management:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
         <HBox alignment="center" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-            <Button fx:id="addEventButton" onAction="#handleAddEvent" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Add Event" />
-            <Button fx:id="editEventButton" onAction="#handleEditEvent" style="-fx-background-color: #FFC107; -fx-text-fill: white;" text="Edit Event" />
-            <Button fx:id="deleteEventButton" onAction="#handleDeleteEvent" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Delete Event" />
+            <Button fx:id="manageEventsButton" onAction="#handleManageEvents" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Manage Events" />
         </HBox>
 
         <!-- Define row constraints -->
@@ -82,7 +81,7 @@
             <RowConstraints />
         </rowConstraints>
     </GridPane>
-
+    <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout"/>
     <!-- Footer -->
     <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
         <Label style="-fx-font-size: 12px;" text="© 2025 University Management System" />

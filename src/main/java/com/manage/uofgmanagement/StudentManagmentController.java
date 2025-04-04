@@ -45,7 +45,7 @@ public class StudentManagmentController {
         }
     }
 
-    public void createStudentsTable() {
+    public void createStudentsTable() { //create table in student management
         String sql = "CREATE TABLE IF NOT EXISTS students ("
                 + "student_id TEXT PRIMARY KEY, "
                 + "name TEXT NOT NULL, "
@@ -252,7 +252,7 @@ public class StudentManagmentController {
     private void loadStudentsFromDatabase() {
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT * FROM students");
-            while (rs.next()) {
+            while (rs.next()) { //getting properties of each student
                 String studentId = rs.getString("student_id");
                 String name = rs.getString("name");
                 String address = rs.getString("address");
@@ -272,7 +272,7 @@ public class StudentManagmentController {
     }
 
     @FXML
-    private void handleAddStudent() {
+    private void handleAddStudent() { //creating a new stage that allows inputs
         Stage addStudentStage = new Stage();
         VBox vBox = new VBox(10);
         vBox.setStyle("-fx-padding: 10;");
@@ -327,7 +327,7 @@ public class StudentManagmentController {
                         studentTable.refresh();
                     }
                 } catch (SQLException e) {
-                    showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage()); //in case of error
                 }
             }
         });
@@ -347,7 +347,7 @@ public class StudentManagmentController {
     @FXML
     private void handleEditStudent() {
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-        if (selectedStudent != null) {
+        if (selectedStudent != null) { //creating a new stage that allows inputs
             Stage editStudentStage = new Stage();
             VBox vBox = new VBox(10);
 

@@ -10,14 +10,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller class for managing course enrollments in the admin view.
+ * This includes enrolling students, dropping students, and assigning faculty.
+ */
 public class EnrollmentManagementControllerAdmin {
 
     @FXML
     private TableView<StudentEnrollment> enrollmentTable, waitlistTable;
+
     @FXML
     private TableColumn<StudentEnrollment, String> studentNameColumn, waitlistNameColumn;
+
     @FXML
-    private Button enrollButton, dropButton, assignFacultyButton; // Removed deleteButton
+    private Button enrollButton, dropButton, assignFacultyButton;
+
     @FXML
     private ComboBox<CourseEnrollment> courseDropdown;
 
@@ -34,8 +41,6 @@ public class EnrollmentManagementControllerAdmin {
         waitlistNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         loadCourses();
-
-        // Set admin mode to true to ensure buttons are enabled
         setAdmin(true);
     }
 
@@ -52,6 +57,12 @@ public class EnrollmentManagementControllerAdmin {
             selectedCourse = courseDropdown.getSelectionModel().getSelectedItem();
             loadEnrollmentData();
         });
+
+        if (!courses.isEmpty()) {
+            courseDropdown.getSelectionModel().selectFirst();
+            selectedCourse = courseDropdown.getSelectionModel().getSelectedItem();
+            loadEnrollmentData();
+        }
     }
 
     private void loadEnrollmentData() {
@@ -73,8 +84,6 @@ public class EnrollmentManagementControllerAdmin {
     }
 
     private void checkAdminAccess() {
-        System.out.println("Admin Mode: " + isAdmin); // Debug log
-
         enrollButton.setDisable(!isAdmin);
         assignFacultyButton.setDisable(!isAdmin);
         dropButton.setDisable(!isAdmin);
@@ -96,7 +105,7 @@ public class EnrollmentManagementControllerAdmin {
         if (selectedStudent != null) {
             String result = enrollmentService.enrollStudent(selectedStudent.getId(), selectedCourse.getId());
             showAlert("Enrollment Status", result);
-            loadEnrollmentData(); // Update the tables after enrolling the student
+            loadEnrollmentData();
         } else {
             showAlert("Select Student", "Please select a student from the waitlist.");
         }
@@ -159,68 +168,121 @@ public class EnrollmentManagementControllerAdmin {
         alert.showAndWait();
     }
 
-    // =========================== INNER CLASS: EnrollmentService =========================== //
-    private static class EnrollmentService {
-        private final List<StudentEnrollment> enrolledStudents = new ArrayList<>();
-        private final List<StudentEnrollment> waitlistedStudents = new ArrayList<>();
-        private final List<CourseEnrollment> courses = new ArrayList<>();
+    /**
+     * Service class with simulated student enrollments.
+     */
+    private class EnrollmentService {
+            private final List<CourseEnrollment> courses = new ArrayList<>();
+            private final List<StudentEnrollment> allStudents = new ArrayList<>();
+            private final List<EnrollmentRecord> enrollmentRecords = new ArrayList<>();
 
-        public EnrollmentService() {
-            // Adding all the courses as provided
-            courses.add(new CourseEnrollment(1, "MATH001", "Calculus I", "MATH", "Section 1", 30, "Mon/Wed 9-11 AM", "12/15/2025 9:00", "Room 101", "Dr. Alan Turing"));
-            courses.add(new CourseEnrollment(2, "ENG101", "Literature Basics", "ENG", "Section 1", 25, "Tue/Thu 10-12 PM", "12/16/2025 10:00", "Room 102", "Prof. Emily Brontë"));
-            courses.add(new CourseEnrollment(2, "ENG101", "Literature Basics", "ENG", "Section 2", 25, "Mon/Wed 10-12 PM", "12/16/2025 10:00", "Room 102", "Prof. Emily Brontë"));
-            courses.add(new CourseEnrollment(3, "CS201", "Introduction to Programming", "CS", "Section 1", 42, "Tue/Thu 12-2 PM", "12/16/2025 12:30", "Room 103", "Prof. Bahar Nozari"));
-            courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 1", 50, "Mon/Thu 3-4 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
-            courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 2", 50, "Mon/Tue 5-6 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
-            courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 3", 50, "Fri/Thu 2-3 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
-            courses.add(new CourseEnrollment(5, "ENG101", "Introduction to French", "ENG", "Section 1", 25, "Tue/Thu 4:30 - 5:30 PM", "12/13/2025 10:00", "Room 202", "Dr. Lakyn Copeland"));
-            courses.add(new CourseEnrollment(5, "ENG101", "Introduction to French", "ENG", "Section 2", 25, "Tue/Thu 5:30 - 6:30 PM", "12/13/2025 10:00", "Room 202", "Dr. Lakyn Copeland"));
-            courses.add(new CourseEnrollment(6, "ENGG402", "Water Resources", "ENGG", "Section 1", 50, "Mon/Fri 9:00 - 10:30 AM", "12/01/2025 9:00", "Room 203", "Dr. Albozr Gharabaghi"));
-        }
+            public EnrollmentService() {
+                // Add courses
+                courses.add(new CourseEnrollment(1, "MATH001", "Calculus I", "MATH", "Section 1", 30, "Mon/Wed 9-11 AM", "12/15/2025 9:00", "Room 101", "Dr. Alan Turing"));
+                courses.add(new CourseEnrollment(2, "ENG101", "Literature Basics", "ENG", "Section 1", 25, "Tue/Thu 10-12 PM", "12/16/2025 10:00", "Room 102", "Prof. Emily Brontë"));
+                courses.add(new CourseEnrollment(2, "ENG101", "Literature Basics", "ENG", "Section 2", 25, "Mon/Wed 10-12 PM", "12/16/2025 10:00", "Room 102", "Prof. Emily Brontë"));
+                courses.add(new CourseEnrollment(3, "CS201", "Introduction to Programming", "CS", "Section 1", 42, "Tue/Thu 12-2 PM", "12/16/2025 12:30", "Room 103", "Prof. Bahar Nozari"));
+                courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 1", 50, "Mon/Thu 3-4 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
+                courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 2", 50, "Mon/Tue 5-6 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
+                courses.add(new CourseEnrollment(4, "CHEM200", "Introduction to Chemistry", "CHEM", "Section 3", 50, "Fri/Thu 2-3 PM", "12/14/2025 4:00", "Room 201", "Dr. Lucka Lucku"));
+                courses.add(new CourseEnrollment(5, "ENG101", "Introduction to French", "ENG", "Section 1", 25, "Tue/Thu 4:30 - 5:30 PM", "12/13/2025 10:00", "Room 202", "Dr. Lakyn Copeland"));
+                courses.add(new CourseEnrollment(5, "ENG101", "Introduction to French", "ENG", "Section 2", 25, "Tue/Thu 5:30 - 6:30 PM", "12/13/2025 10:00", "Room 202", "Dr. Lakyn Copeland"));
+                courses.add(new CourseEnrollment(6, "ENGG402", "Water Resources", "ENGG", "Section 1", 50, "Mon/Fri 9:00 - 10:30 AM", "12/01/2025 9:00", "Room 203", "Dr. Albozr Gharabaghi"));
 
-        public List<CourseEnrollment> getAllCourses() {
-            return courses;
-        }
+                // Add students
+                allStudents.add(new StudentEnrollment("Alice Smith"));      // 0
+                allStudents.add(new StudentEnrollment("Bob Johnson"));      // 1
+                allStudents.add(new StudentEnrollment("Carol Williams"));   // 2
+                allStudents.add(new StudentEnrollment("Lucka Racki"));      // 3
+                allStudents.add(new StudentEnrollment("David Lee"));        // 4
+                allStudents.add(new StudentEnrollment("Emily Brown"));      // 5
+                allStudents.add(new StudentEnrollment("George Smith"));     // 6
+                allStudents.add(new StudentEnrollment("Helen Jones"));      // 7
+                allStudents.add(new StudentEnrollment("Isaac Clark"));      // 8
+                allStudents.add(new StudentEnrollment("Jennifer Davis"));   // 9
 
-        public List<StudentEnrollment> getEnrolledStudents(int courseId) {
-            return enrolledStudents;
-        }
+                // Enrollment Records (mix of enrolled and waitlisted)
+                enrollmentRecords.add(new EnrollmentRecord(1, allStudents.get(0), true));   // Alice Smith - enrolled in MATH001
+                enrollmentRecords.add(new EnrollmentRecord(1, allStudents.get(1), false));  // Bob Johnson - waitlisted in MATH001
 
-        public List<StudentEnrollment> getWaitlistedStudents(int courseId) {
-            return waitlistedStudents;
-        }
+                enrollmentRecords.add(new EnrollmentRecord(2, allStudents.get(2), true));   // Carol Williams - enrolled in ENG101
+                enrollmentRecords.add(new EnrollmentRecord(2, allStudents.get(3), false));  // Lucka Racki - waitlisted in ENG101
 
-        public String dropStudent(int studentId, int courseId) {
-            return enrolledStudents.removeIf(student -> student.getId() == studentId) ?
-                    "Student dropped successfully." : "Student not found in enrolled list.";
-        }
+                enrollmentRecords.add(new EnrollmentRecord(3, allStudents.get(4), true));   // David Lee - enrolled in CS201
+                enrollmentRecords.add(new EnrollmentRecord(3, allStudents.get(5), false));  // Emily Brown - waitlisted in CS201
+                enrollmentRecords.add(new EnrollmentRecord(3, allStudents.get(6), false));  // George Smith - waitlisted in CS201
 
-        public String enrollStudent(int studentId, int courseId) {
-            StudentEnrollment student = getWaitlistedStudentById(studentId);
-            if (student != null) {
-                enrolledStudents.add(student);
-                waitlistedStudents.remove(student);
-                return "Student enrolled successfully.";
+                enrollmentRecords.add(new EnrollmentRecord(4, allStudents.get(7), true));   // Helen Jones - enrolled in CHEM200
+                enrollmentRecords.add(new EnrollmentRecord(4, allStudents.get(8), false));  // Isaac Clark - waitlisted in CHEM200
+
+                enrollmentRecords.add(new EnrollmentRecord(5, allStudents.get(9), true));   // Jennifer Davis - enrolled in French
             }
-            return "Student not found in waitlist.";
-        }
 
-        public String assignFaculty(int courseId, String facultyName) {
-            CourseEnrollment course = getCourseById(courseId);
-            if (course != null) {
-                course.setTeacherName(facultyName);
-                return "Faculty assigned successfully.";
+            public List<CourseEnrollment> getAllCourses() {
+                return courses;
             }
-            return "Course not found.";
+
+            public List<StudentEnrollment> getEnrolledStudents(int courseId) {
+                List<StudentEnrollment> enrolled = new ArrayList<>();
+                for (EnrollmentRecord record : enrollmentRecords) {
+                    if (record.courseId == courseId && record.isEnrolled) {
+                        enrolled.add(record.student);
+                    }
+                }
+                return enrolled;
+            }
+
+            public List<StudentEnrollment> getWaitlistedStudents(int courseId) {
+                List<StudentEnrollment> waitlisted = new ArrayList<>();
+                for (EnrollmentRecord record : enrollmentRecords) {
+                    if (record.courseId == courseId && !record.isEnrolled) {
+                        waitlisted.add(record.student);
+                    }
+                }
+                return waitlisted;
+            }
+
+            public String dropStudent(int studentId, int courseId) {
+                for (EnrollmentRecord record : enrollmentRecords) {
+                    if (record.courseId == courseId && record.student.getId() == studentId && record.isEnrolled) {
+                        record.isEnrolled = false;
+                        return "Student dropped successfully.";
+                    }
+                }
+                return "Student not found in enrolled list.";
+            }
+
+            public String enrollStudent(int studentId, int courseId) {
+                for (EnrollmentRecord record : enrollmentRecords) {
+                    if (record.courseId == courseId && record.student.getId() == studentId && !record.isEnrolled) {
+                        record.isEnrolled = true;
+                        return "Student enrolled successfully.";
+                    }
+                }
+                return "Student not found in waitlist.";
+            }
+
+            public String assignFaculty(int courseId, String facultyName) {
+                for (CourseEnrollment course : courses) {
+                    if (course.getId() == courseId) {
+                        course.setTeacherName(facultyName);
+                        return "Faculty assigned successfully.";
+                    }
+                }
+                return "Course not found.";
+            }
+
+            private class EnrollmentRecord {
+                int courseId;
+                StudentEnrollment student;
+                boolean isEnrolled;
+
+                EnrollmentRecord(int courseId, StudentEnrollment student, boolean isEnrolled) {
+                    this.courseId = courseId;
+                    this.student = student;
+                    this.isEnrolled = isEnrolled;
+                }
+            }
         }
 
-        private CourseEnrollment getCourseById(int courseId) {
-            return courses.stream().filter(course -> course.getId() == courseId).findFirst().orElse(null);
-        }
-
-        private StudentEnrollment getWaitlistedStudentById(int studentId) {
-            return waitlistedStudents.stream().filter(student -> student.getId() == studentId).findFirst().orElse(null);
-        }
     }
-}
