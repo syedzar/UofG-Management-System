@@ -91,8 +91,18 @@ public class UserDashboardController implements Initializable {
 
     private void handleViewProfile(ActionEvent event) {
         System.out.println("View Profile button clicked.");
+        //System.out.println(EditProfile.getEmail());
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/StudentManagementUser.fxml"));
+            Parent root = loader.load();
+            Stage profileStage = new Stage();
+            profileStage.setScene(new Scene(root));
+            profileStage.setTitle("Student Profile");
+            profileStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
     private void handleEditProfile(ActionEvent event) {
         System.out.println("Edit Profile button clicked.");
     }

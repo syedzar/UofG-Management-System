@@ -74,6 +74,7 @@ public class LoginController {
 
         if (role != null) {
             System.out.println("Login successful! Role: " + role);
+            EditProfile.setEmail(username.trim());
             navigateToDashboard(role);
         } else {
             errorLabel.setText("Invalid credentials. Please try again.");

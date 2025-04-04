@@ -45,7 +45,7 @@ public class StudentManagmentController {
         }
     }
 
-    public void createStudentsTable() { //create table in student management
+    public void createStudentsTable() { // Function to create the SQLite table for students
         String sql = "CREATE TABLE IF NOT EXISTS students ("
                 + "student_id TEXT PRIMARY KEY, "
                 + "name TEXT NOT NULL, "
@@ -236,7 +236,7 @@ public class StudentManagmentController {
     @FXML
     private void initialize() {
         createStudentsTable();
-        loadStudentsFromDatabase(); // Load existing students from the database
+        loadStudentsFromDatabase(); // Load existing students from the data base
         // Bind columns to the respective fields of the Student class
         studentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentName()));
         studentIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
@@ -249,10 +249,10 @@ public class StudentManagmentController {
         studentTable.setItems(studentList);
     }
 
-    private void loadStudentsFromDatabase() {
+    private void loadStudentsFromDatabase() { // Loads existing students in the data base
         try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT * FROM students");
-            while (rs.next()) { //getting properties of each student
+            while (rs.next()) {
                 String studentId = rs.getString("student_id");
                 String name = rs.getString("name");
                 String address = rs.getString("address");
@@ -272,7 +272,7 @@ public class StudentManagmentController {
     }
 
     @FXML
-    private void handleAddStudent() { //creating a new stage that allows inputs
+    private void handleAddStudent() {
         Stage addStudentStage = new Stage();
         VBox vBox = new VBox(10);
         vBox.setStyle("-fx-padding: 10;");
@@ -302,8 +302,11 @@ public class StudentManagmentController {
                         "INSERT INTO students (student_id, name, address, phone, password, email, tuition_fee, profile_picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
 
                     try (Statement stmt = conn.createStatement()) {
+
+                        // Gathering the student ids up to the latest
                         ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM students");
                         rs.next();
+                        // Increasing count to ensure unique id for all students in the format XXXX
                         int count = rs.getInt("count") + 1;
                         String studentID = String.format("%04d", count);
 
@@ -327,7 +330,7 @@ public class StudentManagmentController {
                         studentTable.refresh();
                     }
                 } catch (SQLException e) {
-                    showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage()); //in case of error
+                    showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage());
                 }
             }
         });
@@ -345,16 +348,16 @@ public class StudentManagmentController {
     }
 
     @FXML
-    private void handleEditStudent() {
+    private void handleEditStudent() { // Function to edit a selected student
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-        if (selectedStudent != null) { //creating a new stage that allows inputs
+        if (selectedStudent != null) {
             Stage editStudentStage = new Stage();
             VBox vBox = new VBox(10);
 
-            // Pre-fill fields with existing data
+            // Filling fields with existing data
             TextField nameField = new TextField(selectedStudent.getStudentName());
             TextField idField = new TextField(selectedStudent.getStudentId());
-            idField.setDisable(true); // Disable editing of student ID
+            idField.setDisable(true);
             TextField addressField = new TextField(selectedStudent.getAddress());
             TextField phoneField = new TextField(selectedStudent.getPhone());
             PasswordField passwordField = new PasswordField();
@@ -371,6 +374,7 @@ public class StudentManagmentController {
                 String email = emailField.getText();
                 String tuitionFee = tuitionFeeField.getText();
 
+                // Error handling to ensure all required fiels are filled
                 if (name.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty() || tuitionFee.isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, "All fields are required!");
                 } else {
@@ -385,7 +389,7 @@ public class StudentManagmentController {
                         pstmt.setString(7, selectedStudent.getStudentId());
                         pstmt.executeUpdate();
 
-                        // Update the selected student's properties
+                        // Update the selected student's fields
                         selectedStudent.setStudentName(name);
                         selectedStudent.setAddress(address);
                         selectedStudent.setPhone(phone);
@@ -418,16 +422,17 @@ public class StudentManagmentController {
     }
 
     @FXML
-    private void handleDeleteStudent() {
+    private void handleDeleteStudent() { // Function to delete a selected student
         Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
         if (selectedStudent != null) {
             Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
             confirmationAlert.setTitle("Delete Student");
+            // Confirmation page for deletion
             confirmationAlert.setContentText("Are you sure you want to delete this student?");
             confirmationAlert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(
-                            "DELETE FROM students WHERE student_id=?")) {
+                            "DELETE FROM students WHERE student_id=?")) { //Removing selected student from database
                         pstmt.setString(1, selectedStudent.getStudentId());
                         pstmt.executeUpdate();
                     } catch (SQLException e) {

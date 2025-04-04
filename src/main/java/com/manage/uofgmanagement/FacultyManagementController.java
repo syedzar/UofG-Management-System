@@ -34,7 +34,7 @@ public class FacultyManagementController {
         }
     }
 
-    private void createTableIfNotExists() { // Creates the faculties table incase if it does not exist
+    private void createTableIfNotExists() { // Creates the faculties table in case doesn't exist
         String sql = "CREATE TABLE IF NOT EXISTS Faculties (" +
                 "faculty_id TEXT PRIMARY KEY, " +
                 "name TEXT, " +
@@ -88,7 +88,7 @@ public class FacultyManagementController {
         Stage addFacultyStage = new Stage();
         VBox vbox = new VBox(10);
 
-        //Corresponding text fields for the fields of a faculty member
+        // Corresponding text fields for the fields of a faculty member
         TextField nameField = new TextField();
         TextField degreeField = new TextField();
         TextField researchField = new TextField();

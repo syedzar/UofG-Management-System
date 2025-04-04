@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.manage.uofgmanagement.EditProfile"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <VBox spacing="20" layoutX="20" layoutY="20">
+        <GridPane hgap="10" vgap="10">
+            <!-- Personal Information -->
+            <Label text="Student ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label fx:id="idLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label fx:id="nameLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Address:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label fx:id="addressLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Phone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label fx:id="phoneLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <Label text="Email:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <Label fx:id="emailLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+            <!-- Academic Information -->
+            <Label text="Academic Level:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <Label fx:id="academicLevelLabel" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+            <Label text="Current Semester:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <Label fx:id="currentSemesterLabel" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+            <Label text="Thesis Title:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+            <Label fx:id="thesisTitleLabel" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+            <Label text="Progress:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+            <Label fx:id="progressLabel" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+
+            <!-- Profile Image -->
+            <ImageView fx:id="profileImageView"
+                       fitWidth="100"
+                       fitHeight="100"
+                       GridPane.rowIndex="0" GridPane.columnIndex="2"
+                       GridPane.rowSpan="5"/>
+        </GridPane>
+
+        <!-- Enrolled Courses -->
+        <Label text="Enrolled Courses" style="-fx-font-weight: bold;"/>
+        <ListView fx:id="coursesListView" prefHeight="150" prefWidth="750"/>
+    </VBox>
+</AnchorPane>
