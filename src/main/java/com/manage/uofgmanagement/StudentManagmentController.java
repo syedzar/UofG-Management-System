@@ -236,6 +236,7 @@ public class StudentManagmentController {
     @FXML
     private void initialize() {
         createStudentsTable();
+        loadStudentsFromDatabase(); // Load existing students from the database
         // Bind columns to the respective fields of the Student class
         studentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentName()));
         studentIdColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
@@ -248,6 +249,28 @@ public class StudentManagmentController {
         studentTable.setItems(studentList);
     }
 
+    private void loadStudentsFromDatabase() {
+        try (Connection conn = connect(); Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT * FROM students");
+            while (rs.next()) {
+                String studentId = rs.getString("student_id");
+                String name = rs.getString("name");
+                String address = rs.getString("address");
+                String phone = rs.getString("phone");
+                String password = rs.getString("password");
+                String email = rs.getString("email");
+                String tuitionFee = rs.getString("tuition_fee");
+                String profilePicturePath = rs.getString("profile_picture_path");
+
+                Student student = new Student(name, studentId, address, phone, password, email, tuitionFee);
+                student.setProfilePicturePath(profilePicturePath); // Set profile picture path
+                studentList.add(student);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading students from database: " + e.getMessage());
+        }
+    }
+
     @FXML
     private void handleAddStudent() {
         Stage addStudentStage = new Stage();
@@ -256,7 +279,6 @@ public class StudentManagmentController {
 
         // Input fields for student details
         TextField nameField = new TextField();
-        TextField idField = new TextField();
         TextField addressField = new TextField();
         TextField phoneField = new TextField();
         PasswordField passwordField = new PasswordField();
@@ -266,7 +288,6 @@ public class StudentManagmentController {
         Button submitButton = new Button("Add Student");
         submitButton.setOnAction(event -> {
             String name = nameField.getText();
-            String studentId = idField.getText();
             String address = addressField.getText();
             String phone = phoneField.getText();
             String password = passwordField.getText();
@@ -274,28 +295,37 @@ public class StudentManagmentController {
             String tuitionFee = tuitionFeeField.getText();
 
             // Validate input fields
-            if (name.isEmpty() || studentId.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty() || tuitionFee.isEmpty()) {
+            if (name.isEmpty() || address.isEmpty() || phone.isEmpty() || password.isEmpty() || email.isEmpty() || tuitionFee.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "All fields are required!");
             } else {
                 try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(
                         "INSERT INTO students (student_id, name, address, phone, password, email, tuition_fee, profile_picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
-                    pstmt.setString(1, studentId);
-                    pstmt.setString(2, name);
-                    pstmt.setString(3, address);
-                    pstmt.setString(4, phone);
-                    pstmt.setString(5, password);
-                    pstmt.setString(6, email);
-                    pstmt.setString(7, tuitionFee);
-                    pstmt.setString(8, "resources/Default_pfp.svg.png"); // Default profile picture path
-                    pstmt.executeUpdate();
 
-                    // Add the new student to the ObservableList
-                    Student newStudent = new Student(name, studentId, address, phone, password, email, tuitionFee);
-                    studentList.add(newStudent);
+                    try (Statement stmt = conn.createStatement()) {
+                        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM students");
+                        rs.next();
+                        int count = rs.getInt("count") + 1;
+                        String studentID = String.format("%04d", count);
 
-                    // Close the add student stage and refresh the table
-                    addStudentStage.close();
-                    studentTable.refresh();
+                        //Inserts the member accordingly to the fields
+                        String sql = "INSERT INTO students (studentID, name, address, phone, email, password, tuition, profile_picture_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+                        pstmt.setString(1, studentID);
+                        pstmt.setString(2, name);
+                        pstmt.setString(3, address);
+                        pstmt.setString(4, phone);
+                        pstmt.setString(5, email);
+                        pstmt.setString(6, password);
+                        pstmt.setString(7, tuitionFee);
+                        pstmt.setString(8, "src/main/resources/Default_pfp.svg.png");pstmt.executeUpdate();
+                        // Add the new student to the ObservableList
+                        Student newStudent = new Student(name, studentID, address, phone, password, email, tuitionFee);
+                        studentList.add(newStudent);
+                        studentTable.setItems(studentList);
+                        // Close the add student stage and refresh the table
+                        addStudentStage.close();
+                        studentTable.refresh();
+                    }
                 } catch (SQLException e) {
                     showAlert(Alert.AlertType.ERROR, "Error adding student: " + e.getMessage());
                 }
@@ -303,7 +333,6 @@ public class StudentManagmentController {
         });
 
         vBox.getChildren().addAll(new Label("Name:"), nameField,
-                new Label("Student ID:"), idField,
                 new Label("Address:"), addressField,
                 new Label("Phone:"), phoneField,
                 new Label("Password:"), passwordField,
