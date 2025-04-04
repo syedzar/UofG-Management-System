@@ -81,7 +81,7 @@
             <RowConstraints />
         </rowConstraints>
     </GridPane>
-
+    <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout"/>
     <!-- Footer -->
     <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
         <Label style="-fx-font-size: 12px;" text="© 2025 University Management System" />

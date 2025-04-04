@@ -167,4 +167,26 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            // Get the current stage (admin dashboard window) and close it
+            Stage currentStage = (Stage) addStudentButton.getScene().getWindow();
+            currentStage.close();
+
+            // Load the login FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Parent root = loader.load();
+
+            // Create a new stage (login window) and show it
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(root));
+            loginStage.setTitle("Login");
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
