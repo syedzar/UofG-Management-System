@@ -8,47 +8,29 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import java.io.IOException;
 import java.net.URL;
-import javafx.event.ActionEvent;
 
 public class AdminDashboardController {
 
     // Student Management Buttons
-    @FXML
-    private Button addStudentButton;
-    @FXML
-    private Button editStudentButton;
-    @FXML
-    private Button deleteStudentButton;
+    @FXML private Button addStudentButton;
+    // ... other student management buttons
 
-    // Subject Management Buttons
-    @FXML
-    private Button addSubjectButton;
-    @FXML
-    private Button editSubjectButton;
-    @FXML
-    private Button deleteSubjectButton;
+    // Subject Management Button (new consolidated button)
+    @FXML private Button manageSubjectsButton; // Make sure this fx:id is referenced in your updated FXML
 
     // Course Management Buttons
-    @FXML
-    private Button addCourseButton;
-    @FXML
-    private Button editCourseButton;
-    @FXML
-    private Button deleteCourseButton;
-    @FXML
-    private Button viewCoursesButton;
+    @FXML private Button addCourseButton;
+    @FXML private Button editCourseButton;
+    @FXML private Button deleteCourseButton;
+    @FXML private Button viewCoursesButton;
 
     // Faculty Management Buttons
-    @FXML
-    private Button addFacultyButton;
+    @FXML private Button addFacultyButton;
 
     // Event Management Buttons
-    @FXML
-    private Button addEventButton;
-    @FXML
-    private Button editEventButton;
-    @FXML
-    private Button deleteEventButton;
+    @FXML private Button addEventButton;
+    @FXML private Button editEventButton;
+    @FXML private Button deleteEventButton;
 
     // Admin flag
     private boolean isAdmin = true;
@@ -65,39 +47,30 @@ public class AdminDashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/StudentManagmentAdmin.fxml"));
             Parent root = loader.load();
-            Stage facultyStage = new Stage();
-            facultyStage.setScene(new Scene(root));
-            facultyStage.setTitle("Student Management");
-            facultyStage.show();
+            Stage studentStage = new Stage();
+            studentStage.setScene(new Scene(root));
+            studentStage.setTitle("Student Management");
+            studentStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    // ... other student management methods
 
+    // New Subject Management Action
     @FXML
-    private void handleEditStudent() {
-        openWindow("/EditStudent.fxml", "Edit Student");
-    }
-
-    @FXML
-    private void handleDeleteStudent() {
-        System.out.println("Delete Student button clicked!");
-    }
-
-    // Subject Management Actions
-    @FXML
-    private void handleAddSubject() {
-        System.out.println("Add Subject button clicked!");
-    }
-
-    @FXML
-    private void handleEditSubject() {
-        System.out.println("Edit Subject button clicked!");
-    }
-
-    @FXML
-    private void handleDeleteSubject() {
-        System.out.println("Delete Subject button clicked!");
+    private void handleManageSubjects() {
+        System.out.println("Manage Subjects button clicked!");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SubjectManagement.fxml"));
+            Parent root = loader.load();
+            Stage subjectStage = new Stage();
+            subjectStage.setScene(new Scene(root));
+            subjectStage.setTitle("Subject Management");
+            subjectStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Course Management Actions
@@ -132,8 +105,6 @@ public class AdminDashboardController {
             courseStage.setScene(new Scene(root));
             courseStage.setTitle("Course Dashboard");
             courseStage.show();
-
-            // Removed the line that closes the current window
 
         } catch (IOException | IllegalStateException e) {
             e.printStackTrace();
@@ -189,29 +160,4 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    public void handleLogout(ActionEvent event) {
-        try {
-            // Close the current admin dashboard window
-            Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            currentStage.close();
-
-            // Load the login screen (Login.fxml)
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
-            Parent root = loader.load();
-
-            // Create a new stage for the login screen
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Login");
-            loginStage.setScene(new Scene(root));
-
-            // Show the login screen
-            loginStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
-
