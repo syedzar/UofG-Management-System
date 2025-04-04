@@ -21,7 +21,7 @@ public class AddEditCourseController {
     private CourseEnrollment courseData; // Use CourseEnrollment
     private boolean isEditMode = false;
 
-    public void initData(CourseEnrollment course) { // Change parameter type
+    public void initData(CourseEnrollment course) {
         this.courseData = course;
         if (course != null) {
             isEditMode = true;
