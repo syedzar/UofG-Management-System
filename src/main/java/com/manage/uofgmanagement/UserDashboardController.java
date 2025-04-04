@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 
 public class UserDashboardController implements Initializable {
 
+
     @FXML
     private Label usernameLabel;
 
@@ -58,6 +59,9 @@ public class UserDashboardController implements Initializable {
     @FXML
     private Button viewNotificationsButton;
 
+    @FXML
+    private Button logoutButton2;
+
     private boolean isAdmin = false; // Default: Regular user
 
     // Method to set admin status
@@ -82,6 +86,7 @@ public class UserDashboardController implements Initializable {
         viewAssignmentsButton.setOnAction(this::handleViewAssignments);
         submitAssignmentButton.setOnAction(this::handleSubmitAssignment);
         viewNotificationsButton.setOnAction(this::handleViewNotifications);
+        logoutButton2.setOnAction(this::handleLogout2);
     }
 
     private void handleViewProfile(ActionEvent event) {
@@ -139,5 +144,26 @@ public class UserDashboardController implements Initializable {
 
     private void handleViewNotifications(ActionEvent event) {
         System.out.println("View Notifications button clicked.");
+    }
+    // Logout method
+    @FXML
+    private void handleLogout2(ActionEvent event) {
+        try {
+            // Get the current stage (user dashboard window) and close it
+            Stage currentStage = (Stage) logoutButton2.getScene().getWindow();
+            currentStage.close();
+
+            // Load the login FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Parent root = loader.load();
+
+            // Create a new stage (login window) and show it
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(root));
+            loginStage.setTitle("Login");
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

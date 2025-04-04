@@ -5,7 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.manage.uofgmanagement.LoginController"
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.manage.uofgmanagement.LoginController"
       spacing="20" alignment="center" style="-fx-background-color: #f4f4f4;">
 
     <!-- Header -->

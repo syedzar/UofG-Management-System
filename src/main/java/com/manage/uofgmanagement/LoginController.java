@@ -66,7 +66,10 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Validating login using ExcelReader (your custom logic)
+        // Debugging print statement
+        System.out.println("Attempting login with username: " + username + " and password: " + password);
+
+        // Validating login using ExcelReader
         String role = ExcelReader.validateUser(username, password);
 
         if (role != null) {
@@ -76,6 +79,7 @@ public class LoginController {
             errorLabel.setText("Invalid credentials. Please try again.");
         }
     }
+
 
     private void navigateToDashboard(String role) {
         String fxmlFile = null;

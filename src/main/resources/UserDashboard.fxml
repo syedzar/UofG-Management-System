@@ -84,6 +84,8 @@
             <RowConstraints />
         </rowConstraints>
     </GridPane>
+    <Button fx:id="logoutButton2" text="Logout" onAction="#handleLogout2"/>
+
 
     <!-- Footer -->
     <HBox alignment="center" spacing="10" style="-fx-padding: 10px;">
