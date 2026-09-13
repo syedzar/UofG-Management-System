@@ -4,8 +4,6 @@ A JavaFX-based student management application developed as a university project 
 
 The application provides separate functionality depending on whether the user logs in as a regular user or an administrator. Users can access information such as their courses and enrolment details, while administrators have additional tools for managing students, courses, faculty, grades, and other academic information.
 
-> 🚧 **Project Status:** Still in development.
-
 ---
 
 ## 📖 Overview
